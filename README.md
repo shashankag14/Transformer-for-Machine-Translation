@@ -16,15 +16,17 @@ best models from the literature. We show that the Transformer generalizes well t
 other tasks by applying it successfully to English constituency parsing both with
 large and limited training data.
 
-####Transformer Architecture :
+#### Transformer Architecture :
 
-![img.png](img.png)
+![image](https://user-images.githubusercontent.com/74488693/144745235-758eab17-cc7a-40c8-9710-3fcc5112c1be.png)
 
-####Multi Headed Attention Block in Encoder/Decoder:
-![img_1.png](img_1.png)
+#### Multi Headed Attention Block in Encoder/Decoder:
+![image](https://user-images.githubusercontent.com/74488693/144745249-5c99709d-0446-45fc-a4cb-f0428ead371e.png)
 
-####Computing Attention using Key, Query and Value :
-![img_2.png](img_2.png)
 
-####Positional Embedding using sin/cos :
-![img_3.png](img_3.png)
+#### Computing Attention using Key, Query and Value :
+![image](https://user-images.githubusercontent.com/74488693/144745258-317ce41c-5764-469e-8d9d-34fe194c5874.png)
+
+
+#### Positional Embedding using sin/cos :
+![image](https://user-images.githubusercontent.com/74488693/144745268-0e24760e-f871-4620-b21c-5f6d862ded7d.png)
