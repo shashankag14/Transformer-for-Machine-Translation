@@ -1,0 +1,13 @@
+ Corpus Name: PHP
+     Package: PHP in Moses format
+     Website: http://opus.nlpl.eu/PHP-v1.php
+     Release: v1
+Release date: Sun Mar  4 00:35:59 EET 2018
+
+This corpus is part of OPUS - the open collection of parallel corpora
+OPUS Website: http://opus.nlpl.eu
+
+Please cite the following article if you use any part of the corpus in your own work: J. Tiedemann, 2012, Parallel Data, Tools and Interfaces in OPUS. In Proceedings of the 8th International Conference on Language Resources and Evaluation (LREC 2012)
+
+A parallel corpus originally extracted from http://se.php.net/download-docs.php. The original documents are written in English and have been partly translated into 21 languages. The original manuals contain about 500,000 words. The amount of actually translated texts varies for different languages between 50,000 and 380,000 words. The corpus is rather noisy and may include parts from the English original in some of the translations. The corpus is tokenized and each language pair has been sentence aligned.
+
