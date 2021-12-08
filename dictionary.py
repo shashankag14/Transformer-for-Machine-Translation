@@ -8,10 +8,10 @@ import unicodedata
 import re
 
 # ########################################################################
-# # DATA PRE-PROC
+# # DICTIONARY DATA PRE-PROC
 # ########################################################################
 #
-# Turn a Unicode string to plain ASCII, thanks to
+# Turn a Unicode string to plain ASCII
 # https://stackoverflow.com/a/518232/2809427
 def unicodeToAscii(s):
     return ''.join(

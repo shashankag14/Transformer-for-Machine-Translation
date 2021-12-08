@@ -55,8 +55,8 @@ class Corpus(object):
             ids = torch.cat(idss, dim=0) # (N, seq_len)
         return ids
 
-SANITY_CHECK_TOKENIZER = 1
-if SANITY_CHECK_TOKENIZER :
+TOKENIZER_SANITY_CHECK = 0
+if TOKENIZER_SANITY_CHECK :
     corpus = Corpus()
     print(len(corpus.dictionary_src),len(corpus.dictionary_tgt))
     print(corpus.dictionary_src.n_word, corpus.dictionary_tgt.n_word)
