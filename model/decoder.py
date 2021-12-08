@@ -1,8 +1,14 @@
+"""
+@author : Shashank Agarwal
+@when : 03-12-2021
+@homepage : https://github.com/shashankag14
+"""
+
 import torch
 from torch import Tensor
 from torch import nn
 
-from model.model_utils import position_encoding
+from model.pos_encoding import position_encoding
 from model.attention import MultiHeadAttention
 
 class TransformerDecoderLayer(nn.Module):
@@ -61,7 +67,7 @@ class TransformerDecoder(nn.Module):
             for _ in range(num_layers)
         ])
         self.word_embedding = nn.Embedding(tgt_vocab_size, dim_model)
-        self.linear = nn.Linear(dim_model, dim_model)
+        self.linear = nn.Linear(dim_model, tgt_vocab_size)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, tgt: Tensor, memory: Tensor, src_mask, tgt_mask) -> Tensor:
