@@ -81,5 +81,5 @@ class TransformerDecoder(nn.Module):
             tgt = layer(tgt, memory, src_mask, tgt_mask)
 
         # Linear and softmax to generate final decoder output
-        out = torch.softmax(self.linear(tgt), dim=-1)
-        return out
+        #out = torch.softmax(self.linear(tgt), dim=-1)
+        return self.linear(tgt)#out
