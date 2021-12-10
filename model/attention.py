@@ -1,3 +1,9 @@
+"""
+@author : Shashank Agarwal
+@when : 03-12-2021
+@homepage : https://github.com/shashankag14
+"""
+
 import torch
 from torch import Tensor
 from torch import nn

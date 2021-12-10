@@ -36,10 +36,10 @@ dropout = 0.4
 max_sent_len = 14
 
 # optimizer parameter setting
-init_lr = 1e-3
+init_lr = 5e-5
 factor = 0.9
 adam_eps = 5e-9
-patience = 10
+patience = 8
 warmup = 100
 epoch = 1000
 clip = 1.0

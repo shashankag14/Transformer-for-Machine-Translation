@@ -34,6 +34,7 @@ if MODEL_SANITY_CHECK:
 	out = Transformer(207, 183, 0, 0, "cpu")(src, tgt)
 	print("MODEL OUTPUT SHAPE : ", out.shape)# torch.Size([batch_size, max_sent_len, tgt_vocab_size])
 
+print("Device being used : ", device)
 # Count the number of trainable parameters in the model 
 def count_parameters(model):
 	return sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -106,7 +107,7 @@ def train(model, iterator, optimizer, criterion, clip):
 		loss.backward()
 
 		# Clip gradients to avoid exploding gradient issues
-		#torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+		torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
 		optimizer.step()
 
 		epoch_loss += loss.item()
@@ -144,7 +145,7 @@ def evaluate(model, iterator, criterion):
 				# bleu = nltk.translate.bleu_score.sentence_bleu(output_words.split(), trg_words.split())
 				bleu = bleu*100
 				total_bleu.append(bleu)
-				print(bleu)      
+				     
 
 			total_bleu = sum(total_bleu) / len(total_bleu)
 			batch_bleu.append(total_bleu)

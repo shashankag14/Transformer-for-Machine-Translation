@@ -1,8 +1,14 @@
+"""
+@author : Shashank Agarwal
+@when : 03-12-2021
+@homepage : https://github.com/shashankag14
+"""
+
 import torch
 from torch import Tensor
 from torch import nn
 
-from model.model_utils import position_encoding
+from model.pos_encoding import position_encoding
 from model.attention import MultiHeadAttention
 
 class TransformerEncoderLayer(nn.Module):
