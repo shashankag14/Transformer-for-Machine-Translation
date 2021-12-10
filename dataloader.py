@@ -14,9 +14,9 @@ import utils
 def get_dataloader(src_tokens, tgt_tokens) :
 
     # 1. Split the SRC and TGT tokens into train, valid and test sets
-    train_src, remain_src = train_test_split(src_tokens, test_size=0.5,
+    train_src, remain_src = train_test_split(src_tokens, test_size=0.1,
                                              random_state=27)
-    train_tgt, remain_tgt = train_test_split(tgt_tokens, test_size=0.5,
+    train_tgt, remain_tgt = train_test_split(tgt_tokens, test_size=0.1,
                                              random_state=27)
 
     valid_src, test_src = train_test_split(remain_src, test_size=0.5,
@@ -33,7 +33,7 @@ def get_dataloader(src_tokens, tgt_tokens) :
     train_dataloader = data.DataLoader(train_dataset, batch_size=utils.batch_size, shuffle=True)
     valid_dataloader = data.DataLoader(valid_dataset, batch_size=utils.batch_size, shuffle=True)
     test_dataloader = data.DataLoader(test_dataset, batch_size=utils.batch_size, shuffle=True)
-
+    print(len(train_dataloader), len(valid_dataloader), len(test_dataloader))
     return train_dataloader, valid_dataloader, test_dataloader
 
 DATALOADER_SANITY_CHECK = 0
