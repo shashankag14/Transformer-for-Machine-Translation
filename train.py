@@ -69,6 +69,9 @@ model = Transformer(src_vocab_size,
 print(f'Trainable Parameters : {count_parameters(model):,}')
 model.apply(initialize_weights)
 
+##### To load saved model and continue training
+# model.load_state_dict(torch.load('saved_chkpt/best_model.pt'))
+
 # Optimizer
 optimizer = Adam(params=model.parameters(),
                  lr=init_lr,
@@ -139,14 +142,9 @@ def evaluate(model, iterator, criterion):
 				trg_words = idx_to_word(trg[j], corpus.dictionary_tgt)
 				output_words = output[j].max(dim=1)[1]
 				output_words = idx_to_word(output_words, corpus.dictionary_tgt)
-				# print(trg_words, output_words)        
-				#print("trg", trg_words.split(), "out", output_words.split())
 				bleu = get_bleu(hypotheses=output_words.split(), reference=trg_words.split())
-				# bleu = nltk.translate.bleu_score.sentence_bleu(output_words.split(), trg_words.split())
-				bleu = bleu*100
 				total_bleu.append(bleu)
 				     
-
 			total_bleu = sum(total_bleu) / len(total_bleu)
 			batch_bleu.append(total_bleu)
 
@@ -172,7 +170,7 @@ def run(total_epoch, best_loss):
 
 		if valid_loss < best_loss:
 			best_loss = valid_loss
-			torch.save(model.state_dict(), 'saved_chkpt/model-{0}.pt'.format(valid_loss))
+			torch.save(model.state_dict(), 'saved_chkpt/best_model.pt')
 
 		f = open('results/train_loss.txt', 'w')
 		f.write(str(train_losses))
@@ -187,8 +185,8 @@ def run(total_epoch, best_loss):
 		f.close()
 
 		print(f'Epoch: {step + 1} | Time: {epoch_mins}m {epoch_secs}s')
-		print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
-		print(f'\tVal Loss: {valid_loss:.3f} |  Val PPL: {math.exp(valid_loss):7.3f}')
+		print(f'\tTrain Loss: {train_loss:.3f}')
+		print(f'\tVal Loss: {valid_loss:.3f}')
 		print(f'\tBLEU Score: {bleu:.3f}')
 
 
