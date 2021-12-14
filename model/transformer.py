@@ -49,16 +49,7 @@ class Transformer(nn.Module):
             dim_feedforward=dim_feedforward,
             dropout=dropout,
         )
-    # SOURCE AND TARGET MASKS
-    # def make_src_mask(self, src):
-    #     src_mask = (src != self.src_mask_idx).unsqueeze(1).unsqueeze(2)
-    #     # (N,1,1,src_len)
-    #     return src_mask.to(self.device)
-    #
-    # def make_tgt_mask(self, tgt):
-    #     N, tgt_len = tgt.shape
-    #     tgt_mask = torch.tril(torch.ones((tgt_len, tgt_len))).expand(N,1,tgt_len, tgt_len)
-    #     return tgt_mask.to(self.device)
+
     def make_pad_mask(self, q, k):
         len_q, len_k = q.size(1), k.size(1)
 
@@ -89,11 +80,8 @@ class Transformer(nn.Module):
 
         trg_mask = self.make_pad_mask(tgt, tgt) * \
                    self.make_no_peak_mask(tgt, tgt)
-        # 
-        # src_mask = self.make_src_mask(src)
-        # tgt_mask = self.make_tgt_mask(tgt)
 
         enc_src = self.encoder(src, src_mask)
-        # out = self.decoder(tgt, enc_src, src_trg_mask, tgt_mask)
+
         out = self.decoder(tgt, enc_src, trg_mask, src_trg_mask)
         return out

@@ -185,13 +185,13 @@ def run(total_epoch, best_loss):
 		f.write(str(bleus))
 		f.close()
 
-		f = open('results/test_loss.txt', 'w')
+		f = open('results/valid_loss.txt', 'w')
 		f.write(str(test_losses))
 		f.close()
 
 		print(f'Epoch: {step + 1} | Time: {epoch_mins}m {epoch_secs}s')
 		print(f'\tTrain Loss: {train_loss:.3f}')
-		print(f'\tVal Loss: {valid_loss:.3f}')
+		print(f'\tValid Loss: {valid_loss:.3f}')
 		print(f'\tBLEU Score: {bleu:.3f}')
 
 
