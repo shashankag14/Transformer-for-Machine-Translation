@@ -63,7 +63,7 @@ def get_dataloader(src_tokens, tgt_tokens) :
 #########################################
 #       ONLY FOR SANITY CHECK           #
 #########################################
-DATALOADER_SANITY_CHECK = 1
+DATALOADER_SANITY_CHECK = 0
 
 if DATALOADER_SANITY_CHECK :
     corpus = tokenizer.Corpus()
