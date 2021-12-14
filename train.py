@@ -123,9 +123,9 @@ def evaluate(model, iterator, criterion):
 	epoch_loss = 0
 	batch_bleu = []
 	with torch.no_grad():
-		for i, batch in enumerate(iterator.batches):
-			src = batch[0].to(device)
-			trg = batch[1].to(device)  
+		for batch_num, batch in enumerate(iterator.batches):
+			src, trg = tokenizer.add_padding(batch)
+			src, trg = src.to(device), trg.to(device)
 
 			output = model(src, trg)
 			output_reshape = output[:,1:].contiguous().view(-1, output.shape[-1])
@@ -138,9 +138,9 @@ def evaluate(model, iterator, criterion):
 			total_bleu = [] 
 			# Note : Size of last batch might not be equal to batch_size, thus trg.size(dim=0)
 			for j in range(trg.size(dim=0)):
-				trg_words = tokenizer.detokenize(trg[j], corpus.dictionary_tgt)
+				trg_words = tokenizer.detokenize(trg[j].tolist(), corpus.dictionary_tgt)
 				output_words = output[j].max(dim=1)[1]
-				output_words = tokenizer.detokenize(output_words, corpus.dictionary_tgt)
+				output_words = tokenizer.detokenize(output_words.tolist(), corpus.dictionary_tgt)
 				bleu = get_bleu(hypotheses=output_words.split(), reference=trg_words.split())
 				total_bleu.append(bleu)
 				     
