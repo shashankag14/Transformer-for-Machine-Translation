@@ -5,10 +5,27 @@
 """
 
 from sklearn.model_selection import train_test_split
-import torch.utils.data as data
+import torchtext
 
 import tokenizer
 import utils
+from bleu_metric import * # remove after testing
+
+class CustomDataset(object):
+    def __init__(self, data):
+        self.src_data = []
+        self.tgt_data = []
+        for src,tgt in data:
+            if len(src)<utils.max_sent_len :
+                self.src_data.append(src)
+                self.tgt_data.append(tgt)
+        self.num_examples = len(self.src_data)
+
+    def __len__(self):
+        return self.num_examples
+
+    def __getitem__(self, item):
+        return {'src': self.src_data[item], 'tgt': self.tgt_data[item]}
 
 # Method for splitting the tokens and creating dataloaders for train, valid and test
 def get_dataloader(src_tokens, tgt_tokens) :
@@ -24,19 +41,29 @@ def get_dataloader(src_tokens, tgt_tokens) :
     valid_tgt, test_tgt = train_test_split(remain_tgt, test_size=0.5,
                                            random_state=27)
 
-    # 2. Make tuples of SRC and TGT and create datasets
-    train_dataset = data.TensorDataset(train_src, train_tgt)
-    valid_dataset = data.TensorDataset(valid_src, valid_tgt)
-    test_dataset = data.TensorDataset(test_src, test_tgt)
+    train_data = list(zip(train_src, train_tgt))
+    valid_data = list(zip(valid_src, valid_tgt))
+    test_data = list(zip(test_src, test_tgt))
 
-    # 3. Create batch wise data iterator (Dataloader) used while training epochs
-    train_dataloader = data.DataLoader(train_dataset, batch_size=utils.batch_size, shuffle=True)
-    valid_dataloader = data.DataLoader(valid_dataset, batch_size=utils.batch_size, shuffle=True)
-    test_dataloader = data.DataLoader(test_dataset, batch_size=utils.batch_size, shuffle=True)
-    print(len(train_dataloader), len(valid_dataloader), len(test_dataloader))
+    train_dataset = CustomDataset(train_data)
+    valid_dataset = CustomDataset(valid_data)
+    test_dataset = CustomDataset(test_data)
+    print("Number of sentences in Train/Valid/Test :", len(train_dataset), len(valid_dataset), len(test_dataset))
+
+    train_dataloader, valid_dataloader, test_dataloader = torchtext.legacy.data.BucketIterator.splits((train_dataset, valid_dataset, test_dataset),
+                                                                          batch_size=utils.batch_size,
+                                                                          sort_within_batch=True,
+                                                                          sort_key=lambda x: len(x['src']),
+                                                                          sort=False,
+                                                                          device=utils.device)
+
     return train_dataloader, valid_dataloader, test_dataloader
 
-DATALOADER_SANITY_CHECK = 0
+
+#########################################
+#       ONLY FOR SANITY CHECK           #
+#########################################
+DATALOADER_SANITY_CHECK = 1
 
 if DATALOADER_SANITY_CHECK :
     corpus = tokenizer.Corpus()
@@ -46,7 +73,30 @@ if DATALOADER_SANITY_CHECK :
 
     train_dataloader, valid_dataloader, test_dataloader = get_dataloader(corpus.tokenize_src,
                                                                         corpus.tokenize_tgt)
-    for i, batch in enumerate(train_dataloader):
-        print(i)
-        print("SRC :", batch[0])
-        print("TGT :", batch[1])
+    print("Number of batches in Train/Valid/Test: ", len(train_dataloader), len(valid_dataloader), len(test_dataloader))
+
+    # Create batches - needs to be called before each loop.
+    test_dataloader.create_batches()
+
+    for batch_num, batch in enumerate(test_dataloader.batches):
+        max_src_batch_len = max([len(example['src']) for example in batch])
+        print("Max len in src batch {} : {}".format(batch_num, max_src_batch_len))
+
+        max_tgt_batch_len = max([len(example['tgt']) for example in batch])
+        print("Max len in tgt batch {} : {}".format(batch_num, max_tgt_batch_len))
+
+        # Only print for first batch and then use break
+        for example in batch:
+            print('SRC example :{}\nSRC len :{}\nTGT example :{}\nTGT len :{}'.format(example['src'],
+                                                                                      len(example['src']),
+                                                                                      example['tgt'],
+                                                                                      len(example['tgt'])))
+
+            src_words = tokenizer.detokenize(example['src'], corpus.dictionary_src)
+            tgt_words = tokenizer.detokenize(example['tgt'], corpus.dictionary_tgt)
+
+            print('\nSRC sentence :{}\nTGT sentence :{}'.format(src_words,tgt_words))
+            print('\n\n')
+            break
+
+

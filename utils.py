@@ -33,7 +33,7 @@ n_heads = 8
 ffn_hidden = 2048
 dropout = 0.4
 
-max_sent_len = 14
+max_sent_len = 16
 
 # optimizer parameter setting
 init_lr = 5e-5

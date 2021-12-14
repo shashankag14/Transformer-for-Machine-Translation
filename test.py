@@ -46,10 +46,10 @@ def test_model(dataloader):
 
             total_bleu = []
             for j in range(trg.size(dim=0)):
-                src_words = idx_to_word(src[j], corpus.dictionary_src)
-                trg_words = idx_to_word(trg[j], corpus.dictionary_tgt)
+                src_words = tokenizer.detokenize(src[j].tolist(), corpus.dictionary_src)
+                trg_words = tokenizer.detokenize(trg[j].tolist(), corpus.dictionary_tgt)
                 output_words = output[j].max(dim=1)[1]
-                output_words = idx_to_word(output_words, corpus.dictionary_tgt)
+                output_words = tokenizer.detokenize(output_words, corpus.dictionary_tgt)
 
                 print('source :', src_words)
                 print('target :', trg_words)

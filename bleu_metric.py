@@ -46,13 +46,3 @@ def get_bleu(hypotheses, reference):
         stats += np.array(bleu_stats(hyp, ref))
     return 100 * bleu(stats)
 
-
-def idx_to_word(x, vocab):
-    words = []
-    x = x.tolist() # x is a tensor, convert to list
-    for i in x:
-        word = vocab.idx2word[i]
-        if '<' not in word:
-            words.append(word)
-    words = " ".join(words)
-    return words

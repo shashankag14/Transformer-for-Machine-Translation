@@ -10,8 +10,6 @@ import time
 
 from torch import nn, optim
 from torch.optim import Adam
-from torchtext.data.metrics import bleu_score
-import nltk
 
 # Local project files
 import utils
@@ -35,6 +33,7 @@ if MODEL_SANITY_CHECK:
 	print("MODEL OUTPUT SHAPE : ", out.shape)# torch.Size([batch_size, max_sent_len, tgt_vocab_size])
 
 print("Device being used : ", device)
+
 # Count the number of trainable parameters in the model 
 def count_parameters(model):
 	return sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -91,9 +90,9 @@ criterion = nn.CrossEntropyLoss(ignore_index=dict.PAD_token)
 def train(model, iterator, optimizer, criterion, clip):
 	model.train()
 	epoch_loss = 0
-	for i, batch in enumerate(iterator):
-		src = batch[0].to(device)
-		trg = batch[1].to(device)
+	for batch_num, batch in enumerate(iterator.batches):
+		src, trg = tokenizer.add_padding(batch)
+		src, trg = src.to(device), trg.to(device)
 
 		optimizer.zero_grad()
 		output = model(src, trg)  # trg[:,:-1] doesnt work as output is [N,seq_len] and so is src
@@ -114,7 +113,7 @@ def train(model, iterator, optimizer, criterion, clip):
 		optimizer.step()
 
 		epoch_loss += loss.item()
-		print('step :', round((i / len(iterator)) * 100, 2), '% , loss :', loss.item())
+		print('step :', round((batch_num / len(iterator)) * 100, 2), '% , loss :', loss.item())
 
 	return epoch_loss / len(iterator)
 
@@ -124,7 +123,7 @@ def evaluate(model, iterator, criterion):
 	epoch_loss = 0
 	batch_bleu = []
 	with torch.no_grad():
-		for i, batch in enumerate(iterator):
+		for i, batch in enumerate(iterator.batches):
 			src = batch[0].to(device)
 			trg = batch[1].to(device)  
 
@@ -139,9 +138,9 @@ def evaluate(model, iterator, criterion):
 			total_bleu = [] 
 			# Note : Size of last batch might not be equal to batch_size, thus trg.size(dim=0)
 			for j in range(trg.size(dim=0)):
-				trg_words = idx_to_word(trg[j], corpus.dictionary_tgt)
+				trg_words = tokenizer.detokenize(trg[j], corpus.dictionary_tgt)
 				output_words = output[j].max(dim=1)[1]
-				output_words = idx_to_word(output_words, corpus.dictionary_tgt)
+				output_words = tokenizer.detokenize(output_words, corpus.dictionary_tgt)
 				bleu = get_bleu(hypotheses=output_words.split(), reference=trg_words.split())
 				total_bleu.append(bleu)
 				     
@@ -156,8 +155,14 @@ def run(total_epoch, best_loss):
 	train_losses, test_losses, bleus = [], [], []
 	for step in range(total_epoch):
 		start_time = time.time()
+
+		# Create batches - needs to be called before each loop.
+		train_dataloader.create_batches()
 		train_loss = train(model, train_dataloader, optimizer, criterion, clip)
+
+		valid_dataloader.create_batches()
 		valid_loss, bleu = evaluate(model, valid_dataloader, criterion)
+
 		end_time = time.time()
 
 		if step > warmup:

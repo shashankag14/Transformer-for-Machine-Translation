@@ -18,10 +18,10 @@ class Corpus(object):
         self.dictionary_src.add_all_words(src_data_path)
         self.dictionary_tgt.add_all_words(tgt_data_path)
 
-        self.tokenize_src = self.tokenize(src_data_path, self.dictionary_src)
-        self.tokenize_tgt = self.tokenize(tgt_data_path, self.dictionary_tgt)
+        self.tokenize_src = self.tokenize(src_data_path, self.dictionary_src, max_sent_len)
+        self.tokenize_tgt = self.tokenize(tgt_data_path, self.dictionary_tgt, max_sent_len)
 
-    def tokenize(self, path, dictionary):
+    def tokenize(self, path, dictionary, max_sent_len):
         with open(path, 'r', encoding="utf8") as f:
             idss = []
             for line in f:
@@ -33,28 +33,72 @@ class Corpus(object):
                     ids.append(dictionary.word2idx[word])
                 ids.append(EOS_token)
 
-                max_ids_len = max_sent_len + 2  # <SOS> and <EOS> tokens will always be added
+               #  max_ids_len = max_sent_len + 2  # <SOS> and <EOS> tokens will always be added
+               #
+               # # if sentence is larger than max limit, shorten it and append <EOS> @ last
+               #  if len(ids) > max_ids_len:
+               #      ids = ids[:max_ids_len-1]
+               #      ids.append(EOS_token)
+               #
+               #  # if sentence is shorter than max limit, add <PAD> between <SOS> and <EOS>
+               #  elif len(ids) < max_ids_len :
+               #      ids.extend([PAD_token] * (max_ids_len - len(ids)))
+                idss.append(ids)
+            #     idss.append(torch.unsqueeze(torch.tensor(ids).type(torch.int64), dim=0)) # (1, seq_len)
+            # ids = torch.cat(idss, dim=0) # (N, seq_len)
+        return idss
 
-               # if sentence is larger than max limit, shorten it and append <EOS> @ last
-                if len(ids) > max_ids_len:
-                    ids = ids[:max_ids_len-1]
-                    ids.append(EOS_token)
+    def get_max_sent_len(self, path):
+        with open(path, 'r', encoding="utf8") as f:
+            max_sent_len = 0
+            for line in f:
+                normalised_line = normalizeString(line)
+                words = normalised_line.split()
+                if len(words) > max_sent_len:
+                    max_sent_len = len(words)
+                    max_sent = line
+        print("Maximum length sentence : {}".format(max_sent))
+        print("Maximum length : {}".format(max_sent_len))
+        return max_sent_len
 
-                # if sentence is shorter than max limit, add <PAD> between <SOS> and <EOS>
-                elif len(ids) < max_ids_len :
-                    ids.extend([PAD_token] * (max_ids_len - len(ids)))
+# Method to add padding as per max length of sample in each batch
+# input is list of samples in each batch and output is a tensor of samples of each batch
+def add_padding(batch):
+    max_src_batch_len = max([len(example['src']) for example in batch])
+    max_tgt_batch_len = max([len(example['tgt']) for example in batch])
+    max_batch_len = max(max_src_batch_len, max_tgt_batch_len)
 
-                    #############################################################################################
-                    #            Code below is in case <PAD> needs to be added between <SOS> and <EOS>          #
-                    #############################################################################################
-                    # while len(ids) != max_ids_len :
-                    #     PAD_pos = (len(ids) - 1) # position of <PAD> to be inserted is always behind <EOS>
-                    #     ids.insert(PAD_pos, PAD_token)
+    padded_src_batch = []
+    padded_tgt_batch = []
+    for example in batch:
 
-                idss.append(torch.unsqueeze(torch.tensor(ids).type(torch.int64), dim=0)) # (1, seq_len)
-            ids = torch.cat(idss, dim=0) # (N, seq_len)
-        return ids
+        if len(example['src']) < max_batch_len:
+            example['src'].extend([PAD_token] * (max_batch_len - len(example['src'])))
+        padded_src_batch.append(torch.unsqueeze(torch.tensor(example['src']).type(torch.int64), dim=0))  # (1, seq_len)
 
+        if len(example['tgt']) < max_batch_len:
+            example['tgt'].extend([PAD_token] * (max_batch_len - len(example['tgt'])))
+        padded_tgt_batch.append(torch.unsqueeze(torch.tensor(example['tgt']).type(torch.int64), dim=0))  # (1, seq_len)
+
+    padded_src_batch_tensor = torch.cat(padded_src_batch, dim=0)  # (N, seq_len)
+    padded_tgt_batch_tensor = torch.cat(padded_tgt_batch, dim=0)  # (N, seq_len)
+    return padded_src_batch_tensor, padded_tgt_batch_tensor
+
+
+# Method to detokenize i.e. convert idx to words and returns the sentence
+# It removes any special tokens
+def detokenize(x, vocab):
+    words = []
+    for i in x:
+        word = vocab.idx2word[i]
+        if '<' not in word:
+            words.append(word)
+    words = " ".join(words)
+    return words
+
+#########################################
+#       ONLY FOR SANITY CHECK           #
+#########################################
 TOKENIZER_SANITY_CHECK = 0
 if TOKENIZER_SANITY_CHECK :
     corpus = Corpus()
