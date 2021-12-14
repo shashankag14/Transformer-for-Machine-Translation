@@ -8,7 +8,7 @@ import torch
 from torch import Tensor
 from torch import nn
 
-from model.pos_encoding import position_encoding
+from model.position_embedding import PositionEmbedding
 from model.attention import MultiHeadAttention
 
 class TransformerEncoderLayer(nn.Module):
@@ -21,14 +21,21 @@ class TransformerEncoderLayer(nn.Module):
     ):
         super().__init__()
         dim_k = dim_v = dim_model // num_heads # Input dim is split into num_heads
+
+        # Multi headed attention
         self.attention = MultiHeadAttention(num_heads, dim_model, dim_k, dim_v)
-        self.norm = nn.LayerNorm(dim_model) # Layer norm instead of BatchNorm
-        self.dropout = nn.Dropout(dropout)
+        self.norm1 = nn.LayerNorm(dim_model) # Layer norm instead of BatchNorm
+        self.dropout1 = nn.Dropout(dropout)
+
+        # Feed Forward network
         self.feed_forward = nn.Sequential(
             nn.Linear(dim_model, dim_feedforward),
             nn.ReLU(),
+            nn.Dropout(dropout),
             nn.Linear(dim_feedforward, dim_model),
         )
+        self.norm2 = nn.LayerNorm(dim_model)  # Layer norm instead of BatchNorm
+        self.dropout2 = nn.Dropout(dropout)
 
     def forward(self, src: Tensor, mask) -> Tensor:
         # In encoder, Key, Query and Value are all the same.
@@ -40,13 +47,13 @@ class TransformerEncoderLayer(nn.Module):
         # Attention shape = Query shape  = (N, query_len, n_head, dim_in)
 
         # 2. Add and norm
-        x = self.dropout(self.norm(attention + query))
+        x = self.dropout1(self.norm1(attention + query))
 
         # 3. FFN
         forward = self.feed_forward(x)
 
         # 4. Add and norm
-        out = self.dropout(self.norm(forward + x))
+        out = self.dropout2(self.norm2(forward + x))
         return out
 
 
@@ -64,18 +71,23 @@ class TransformerEncoder(nn.Module):
         super().__init__()
         self.device = device
         self.dim_model = dim_model
+
+        self.word_embedding = nn.Embedding(src_vocab_size, self.dim_model)
+        self.position_embedding = PositionEmbedding()
+        self.embedding_dropout = nn.Dropout(dropout)
+
         self.layers = nn.ModuleList([
             TransformerEncoderLayer(dim_model, num_heads, dim_feedforward, dropout)
             for _ in range(num_layers)
         ])
-        self.word_embedding = nn.Embedding(src_vocab_size, self.dim_model)
-        self.dropout = nn.Dropout(dropout)
 
     def forward(self, src: Tensor, mask) -> Tensor:
         seq_len = src.size(1)
-        pos_emb = position_encoding(seq_len, self.dim_model, self.device)
+
+        pos_emb = self.position_embedding(seq_len, self.dim_model, self.device)
         word_emb = self.word_embedding(src.to(torch.long))
-        src = self.dropout(pos_emb + word_emb)
+        src = self.embedding_dropout(pos_emb + word_emb)
+
         for layer in self.layers:
             src = layer(src, mask)
         return src
