@@ -33,7 +33,7 @@ class TransformerDecoderLayer(nn.Module):
         self.feed_forward = nn.Sequential(
             nn.Linear(dim_model, dim_feedforward),
             nn.ReLU(),
-            nn.Dropout(dropout),
+            #nn.Dropout(dropout),
             nn.Linear(dim_feedforward, dim_model),
         )
         self.norm3 = nn.LayerNorm(dim_model)

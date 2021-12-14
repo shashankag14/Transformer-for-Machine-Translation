@@ -35,7 +35,7 @@ parser.add_argument('--tgt_data', type=str, default=tgt_data_path,
                     help='location of the tgt data')
 
 # model parameter setting
-parser.add_argument('--batch_size', type=int, default=128, metavar='N',
+parser.add_argument('--batch_size', type=int, default=64, metavar='N',
                     help='batch size')
 parser.add_argument('--d_model', type=int, default=512,
                     help='size of word embeddings')
@@ -59,9 +59,9 @@ parser.add_argument('--optim_adam_eps', type=float, default=5e-9,
                     help='Adam epsilon')
 parser.add_argument('--optim_patience', type=int, default=8,
                     help='Number of epochs optimizer will wait before decreasing LR')
-parser.add_argument('--optim_warmup', type=int, default=8,
+parser.add_argument('--optim_warmup', type=int, default=100,
                     help='Optimizer warmup')
-parser.add_argument('--optim_weight_decay', type=int, default=100,
+parser.add_argument('--optim_weight_decay', type=int, default=5e-4,
                     help='Weight decay factor for optimizer')
 
 parser.add_argument('--epoch', type=int, default=1000,
