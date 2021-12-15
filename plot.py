@@ -33,10 +33,19 @@ def create_plots():
 	ax1.set_ylabel('Loss')
 
 	ax1.plot(range(1,num_epochs+1), train_loss, c='r', label='Training Loss')
-	ax1.plot(range(1, num_epochs + 1), valid_loss, c='b', label='Validation Loss')
-	leg = ax1.legend()
+	ax1.plot(range(1, num_epochs+1), valid_loss, c='b', label='Validation Loss')
+
+	min_train_loss = min(train_loss)
+	min_train_loss_epoch = train_loss.index(min_train_loss)
+	plt.axvline(x=min_train_loss_epoch, linestyle='--', color='r', label='Minimum training loss')
+
+	min_valid_loss = min(valid_loss)
+	min_valid_loss_epoch = valid_loss.index(min_valid_loss)
+	plt.axvline(x=min_valid_loss_epoch, linestyle='--', color = 'b', label='Minimum valid loss')
+	ax1.legend()
 	plt.grid()
-	plt.show()
+	plt.savefig('results/training_plot.png')
+	print("Plot saved in /results/training_plot.png")
 
 if __name__ == '__main__':
 	create_plots()
