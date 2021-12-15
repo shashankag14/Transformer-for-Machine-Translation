@@ -90,12 +90,12 @@ scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer,
 criterion = nn.CrossEntropyLoss(ignore_index=dict.PAD_token)
 
 # Train loop for each epoch
-def train(model, iterator, optimizer, criterion, clip):
+def train(model, iterator, optimizer, criterion, clip, epoch_num):
 	model.train()
 	epoch_loss = 0
 	with tqdm(iterator, unit="batches") as tepoch:
 		for batch_num, batch in enumerate(iterator.batches):
-			tepoch.set_description(f"Epoch {epoch}")
+			tepoch.set_description(f"Epoch {epoch_num}")
 
 			src, trg = tokenizer.add_padding(batch)
 			src, trg = src.to(device), trg.to(device)
@@ -172,7 +172,7 @@ def run(total_epoch, best_loss):
 
 		# Create batches - needs to be called before each loop.
 		train_dataloader.create_batches()
-		train_loss = train(model, train_dataloader, optimizer, criterion, clip)
+		train_loss = train(model, train_dataloader, optimizer, criterion, clip, step)
 
 		valid_dataloader.create_batches()
 		valid_loss, bleu = evaluate(model, valid_dataloader, criterion)
