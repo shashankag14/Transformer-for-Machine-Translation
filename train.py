@@ -10,6 +10,7 @@ import time
 
 from torch import nn, optim
 from torch.optim import Adam
+from tqdm import tqdm
 
 # Local project files
 import utils
@@ -23,6 +24,8 @@ from bleu_metric import *
 # Ignore warnings
 import warnings
 warnings.filterwarnings("ignore")
+# To empty the cache for TQDM
+torch.cuda.empty_cache()
 
 MODEL_SANITY_CHECK = 0
 
@@ -90,30 +93,41 @@ criterion = nn.CrossEntropyLoss(ignore_index=dict.PAD_token)
 def train(model, iterator, optimizer, criterion, clip):
 	model.train()
 	epoch_loss = 0
-	for batch_num, batch in enumerate(iterator.batches):
-		src, trg = tokenizer.add_padding(batch)
-		src, trg = src.to(device), trg.to(device)
+	with tqdm(iterator, unit="batches") as tepoch:
+		for batch_num, batch in enumerate(iterator.batches):
+			tepoch.set_description(f"Epoch {epoch}")
 
-		optimizer.zero_grad()
-		output = model(src, trg)  # trg[:,:-1] doesnt work as output is [N,seq_len] and so is src
+			src, trg = tokenizer.add_padding(batch)
+			src, trg = src.to(device), trg.to(device)
 
-		# Reshape output and trg before computing the loss
-		output_reshape = output[:, 1:].contiguous().view(-1, output.shape[-1])
-		trg = trg[:, 1:].contiguous().view(-1) # removing the first token of <SOS> and then flattening 2D to 1D tensor
+			optimizer.zero_grad()
+			output = model(src, trg)  # trg[:,:-1] doesnt work as output is [N,seq_len] and so is src
 
-		# output_reshape : (N*seq_len, model_dim), tgt : (N*seq_len)
-		# Compute batch loss
-		loss = criterion(output_reshape, trg)
+			# Reshape output and trg before computing the loss
+			output_reshape = output[:, 1:].contiguous().view(-1, output.shape[-1])
+			trg = trg[:, 1:].contiguous().view(-1) # removing the first token of <SOS> and then flattening 2D to 1D tensor
 
-		# Backprop
-		loss.backward()
+			# output_reshape : (N*seq_len, model_dim), tgt : (N*seq_len)
+			# Compute batch loss
+			loss = criterion(output_reshape, trg)
 
-		# Clip gradients to avoid exploding gradient issues
-		torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-		optimizer.step()
+			# Backprop
+			loss.backward()
 
-		epoch_loss += loss.item()
-		print('step :', round((batch_num / len(iterator)) * 100, 2), '% , loss :', loss.item())
+			# Clip gradients to avoid exploding gradient issues
+			torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+			optimizer.step()
+
+			epoch_loss += loss.item()
+			tepoch.update()
+			tepoch.set_postfix(loss=loss.item())
+
+		# To empty the cache for TQDM
+		torch.cuda.empty_cache()
+		# list(getattr(tqdm, '_instances'))
+		# for instance in list(tqdm._instances):
+		# 	tqdm._decr_instances(instance)
+		# print('step :', round((batch_num / len(iterator)) * 100, 2), '% , loss :', loss.item())
 
 	return epoch_loss / len(iterator)
 
