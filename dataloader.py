@@ -16,7 +16,7 @@ class CustomDataset(object):
         self.src_data = []
         self.tgt_data = []
         for src,tgt in data:
-            if len(src)<utils.max_sent_len :
+            if (len(src)<utils.max_sent_len) or (len(tgt)<utils.max_sent_len):
                 self.src_data.append(src)
                 self.tgt_data.append(tgt)
         self.num_examples = len(self.src_data)

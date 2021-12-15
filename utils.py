@@ -35,7 +35,7 @@ parser.add_argument('--tgt_data', type=str, default=tgt_data_path,
                     help='location of the tgt data')
 
 # model parameter setting
-parser.add_argument('--batch_size', type=int, default=64, metavar='N',
+parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                     help='batch size')
 parser.add_argument('--d_model', type=int, default=512,
                     help='size of word embeddings')
@@ -47,7 +47,7 @@ parser.add_argument('--ffn_hidden', type=int, default=2048,
                     help='number of hidden units in FFN')
 parser.add_argument('--dropout', type=float, default=0.4,
                     help='dropout probability')
-parser.add_argument('--max_sent_len', type=int, default=16,
+parser.add_argument('--max_sent_len', type=int, default=10,
                     help='Maximum length of sentence to use for train/valid/test')
 
 # optimizer parameter setting
