@@ -11,6 +11,13 @@ from torch import nn
 from model.position_embedding import PositionEmbedding
 from model.attention import MultiHeadAttention
 
+# ########################################################################
+# # ENCODER LAYER :
+# 1. Performs Multiheaded self attention
+# 2. Residual + Layer norm
+# 3. Performs FFN
+# 4. Residual + layer norm
+# ########################################################################
 class TransformerEncoderLayer(nn.Module):
     def __init__(
         self,
@@ -31,7 +38,6 @@ class TransformerEncoderLayer(nn.Module):
         self.feed_forward = nn.Sequential(
             nn.Linear(dim_model, dim_feedforward),
             nn.ReLU(),
-            #nn.Dropout(dropout),
             nn.Linear(dim_feedforward, dim_model),
         )
         self.norm2 = nn.LayerNorm(dim_model)  # Layer norm instead of BatchNorm
@@ -39,12 +45,12 @@ class TransformerEncoderLayer(nn.Module):
 
     def forward(self, src: Tensor, mask) -> Tensor:
         # In encoder, Key, Query and Value are all the same.
-        # Its in the decoder that these will change
+        # In decoder these will change !!
         key = query = value = src
 
         # 1. Compute self attention
         attention = self.attention(src, src, src, mask)
-        # Attention shape = Query shape  = (N, query_len, n_head, dim_in)
+        # Attention shape = Query shape  -> (N, query_len, n_head, dim_in)
 
         # 2. Add and norm
         x = self.dropout1(self.norm1(attention + query))
@@ -56,7 +62,11 @@ class TransformerEncoderLayer(nn.Module):
         out = self.dropout2(self.norm2(forward + x))
         return out
 
-
+# ########################################################################
+# # ENCODER BLOCK :
+# 1. Performs word+pos embedding
+# 2. Runs Encoder layers sequentially
+# ########################################################################
 class TransformerEncoder(nn.Module):
     def __init__(
         self,

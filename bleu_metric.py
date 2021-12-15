@@ -38,7 +38,9 @@ def bleu(stats):
     ) / 4.
     return math.exp(min([0, 1 - float(r) / c]) + log_bleu_prec)
 
-
+# ########################################################################
+# # Method to compute BLEU score, called in train/py and test.py
+# ########################################################################
 def get_bleu(hypotheses, reference):
     """Get validation BLEU score for dev set."""
     stats = np.array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])

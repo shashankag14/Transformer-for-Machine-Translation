@@ -148,7 +148,7 @@ def evaluate(model, iterator, criterion):
 			loss = criterion(output_reshape, trg_reshape)
 			epoch_loss += loss.item()
       
-      # Compute BLEU score per batch - corpus level or sentence level??
+            # Compute BLEU score per batch - corpus level or sentence level??
 			total_bleu = [] 
 			# Note : Size of last batch might not be equal to batch_size, thus trg.size(dim=0)
 			for j in range(trg.size(dim=0)):

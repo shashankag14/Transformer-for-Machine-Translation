@@ -17,9 +17,9 @@ class ScaledDotProductAttn(nn.Module):
 		N = query.shape[0]
 		query_len = query.shape[1]
 
-		# queries shape: (N, query_len, heads, heads_dim),
-		# keys shape: (N, key_len, heads, heads_dim)
-		# temp: (N, heads, query_len, key_len)
+		# queries shape -> (N, query_len, heads, heads_dim)
+		# keys shape -> (N, key_len, heads, heads_dim)
+		# temp -> (N, heads, query_len, key_len)
 		temp = torch.einsum("nqhd,nkhd->nhqk", [query, key])
 
 		if mask is not None:
@@ -28,10 +28,10 @@ class ScaledDotProductAttn(nn.Module):
 		scale = (n_head * head_dim) ** 0.5
 		softmax_out = self.softmax(temp / scale)
 
-		# softmax_out shape : (N, n_head, query_len, key_len)
-		# value shape : (N, value_len, n_head, head_dim)
-		# out shape : (N, query_len, n_head, head_dim)
-		# out shape after reshaping : (N, query_len, n_head * head_dim)
+		# softmax_out shape -> (N, n_head, query_len, key_len)
+		# value shape -> (N, value_len, n_head, head_dim)
+		# out shape -> (N, query_len, n_head, head_dim)
+		# out shape after reshaping -> (N, query_len, n_head * head_dim)
 		out = torch.einsum("nhqk, nvhd->nqhd", [softmax_out, value]).reshape(N, query_len, n_head * head_dim)
 		return out
 
@@ -50,7 +50,7 @@ class MultiHeadAttention(nn.Module):
 		N = query.shape[0]
 		query_len, key_len, value_len = query.shape[1], key.shape[1], value.shape[1]
 
-		# Shape of x : (N, x_len, heads, num_heads)
+		# Shape of x -> (N, x_len, heads, num_heads)
 		query = query.reshape(N, query_len, self.num_heads, self.head_dim)
 		key = key.reshape(N, key_len, self.num_heads, self.head_dim)
 		value = value.reshape(N, value_len, self.num_heads, self.head_dim)

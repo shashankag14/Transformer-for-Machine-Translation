@@ -11,6 +11,15 @@ from torch import nn
 from model.position_embedding import PositionEmbedding
 from model.attention import MultiHeadAttention
 
+# ########################################################################
+# # ENCODER LAYER :
+# 1. Performs Multiheaded self attention on Q,K,V from Target
+# 2. Residual + Layer norm
+# 3. Performs Multiheaded Enc-Dec attention on Q from target and K,V from Encoder
+# 4. Residual + Layer norm
+# 5. FFN
+# 6. Residual + Layer norm
+# ########################################################################
 class TransformerDecoderLayer(nn.Module):
     def __init__(
         self,
@@ -33,7 +42,6 @@ class TransformerDecoderLayer(nn.Module):
         self.feed_forward = nn.Sequential(
             nn.Linear(dim_model, dim_feedforward),
             nn.ReLU(),
-            #nn.Dropout(dropout),
             nn.Linear(dim_feedforward, dim_model),
         )
         self.norm3 = nn.LayerNorm(dim_model)
@@ -56,7 +64,12 @@ class TransformerDecoderLayer(nn.Module):
         out = self.dropout3(self.norm3(forward + x))
         return out
 
-
+# ########################################################################
+# # DECODER BLOCK :
+# 1. Performs word+pos embedding
+# 2. Runs Decoder layers sequentially
+# 3. Performs FFN + Softmax @ the end
+# ########################################################################
 class TransformerDecoder(nn.Module):
     def __init__(
         self,
@@ -92,6 +105,4 @@ class TransformerDecoder(nn.Module):
         for layer in self.layers:
             tgt = layer(tgt, memory, src_mask, tgt_mask)
 
-        # Linear and softmax to generate final decoder output
-        #out = torch.softmax(self.linear(tgt), dim=-1)
-        return self.linear(tgt)#out
+        return self.linear(tgt)

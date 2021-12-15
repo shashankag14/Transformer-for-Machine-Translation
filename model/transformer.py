@@ -66,6 +66,7 @@ class Transformer(nn.Module):
         mask = k & q
         return mask
 
+    # Output : Lower triangular matrix to mask out future inputs (Only used in decoder)
     def make_no_peak_mask(self, q, k):
         len_q, len_k = q.size(1), k.size(1)
 
@@ -74,14 +75,12 @@ class Transformer(nn.Module):
         return mask
 
     def forward(self, src: Tensor, tgt: Tensor) -> Tensor:
+        # 1. Run Encoder
         src_mask = self.make_pad_mask(src, src)
-
-        src_trg_mask = self.make_pad_mask(tgt, src)
-
-        trg_mask = self.make_pad_mask(tgt, tgt) * \
-                   self.make_no_peak_mask(tgt, tgt)
-
         enc_src = self.encoder(src, src_mask)
 
+        # 2. Run Decoder
+        src_trg_mask = self.make_pad_mask(tgt, src)
+        trg_mask = self.make_pad_mask(tgt, tgt) * self.make_no_peak_mask(tgt, tgt)
         out = self.decoder(tgt, enc_src, trg_mask, src_trg_mask)
         return out

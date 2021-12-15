@@ -3,7 +3,6 @@
 @when : 10-12-2021
 @homepage : https://github.com/shashankag14
 """
-
 from model.transformer import Transformer
 from utils import *
 import dictionary as dict
@@ -12,13 +11,16 @@ import dataloader
 from bleu_metric import *
 
 print("Test phase started.")
-
-# Create dictionary
+# ########################################################################
+# # Create instance of Dictionary
+# ########################################################################
 corpus = tokenizer.Corpus()
 src_vocab_size = corpus.dictionary_src.n_word
 tgt_vocab_size = corpus.dictionary_tgt.n_word
 
-# Create model instance
+# ########################################################################
+# # Create instance of Transformer Model
+# ########################################################################
 model = Transformer(src_vocab_size,
                     tgt_vocab_size,
                     src_mask_idx=dict.PAD_token,
@@ -31,10 +33,15 @@ model = Transformer(src_vocab_size,
                     dim_feedforward=ffn_hidden,
                     dropout=dropout).to(device)
 
-# Create datasets
+# ########################################################################
+# # Fetch Test Dataloader
+# ########################################################################
 _, _, test_dataloader = dataloader.get_dataloader(corpus.tokenize_src,corpus.tokenize_tgt)
-print("Size of Test datasets :", len(test_dataloader))
+# print("Size of Test datasets :", len(test_dataloader))
 
+# ########################################################################
+# # Run the test using best_model.pt checkpoint and compute BLEU score
+# ########################################################################
 def test_model(dataloader):
     model.load_state_dict(torch.load("saved_chkpt/best_model.pt"))
     with torch.no_grad():
@@ -45,6 +52,7 @@ def test_model(dataloader):
             output = model(src, trg)
 
             total_bleu = []
+            # Print machine translated sentences
             for j in range(trg.size(dim=0)):
                 src_words = tokenizer.detokenize(src[j].tolist(), corpus.dictionary_src)
                 trg_words = tokenizer.detokenize(trg[j].tolist(), corpus.dictionary_tgt)

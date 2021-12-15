@@ -3,13 +3,19 @@
 @when : 07-12-2021
 @homepage : https://github.com/shashankag14
 """
-
 from io import open
 
 # local files in project
 from utils import *
 from dictionary import *
 
+# ########################################################################
+# # CORPUS CLASS
+# 1. Creates SRC/TGT dictionary
+# 2. Performs tokenization :
+#       2.1 Performs data preprocessing using methods in dictionary.py
+#       2.2 Returns tokens for each sentence as a single list
+# ########################################################################
 class Corpus(object):
     def __init__(self):
         self.dictionary_src = Dictionary()
@@ -32,20 +38,7 @@ class Corpus(object):
                 for word in words:
                     ids.append(dictionary.word2idx[word])
                 ids.append(EOS_token)
-
-               #  max_ids_len = max_sent_len + 2  # <SOS> and <EOS> tokens will always be added
-               #
-               # # if sentence is larger than max limit, shorten it and append <EOS> @ last
-               #  if len(ids) > max_ids_len:
-               #      ids = ids[:max_ids_len-1]
-               #      ids.append(EOS_token)
-               #
-               #  # if sentence is shorter than max limit, add <PAD> between <SOS> and <EOS>
-               #  elif len(ids) < max_ids_len :
-               #      ids.extend([PAD_token] * (max_ids_len - len(ids)))
                 idss.append(ids)
-            #     idss.append(torch.unsqueeze(torch.tensor(ids).type(torch.int64), dim=0)) # (1, seq_len)
-            # ids = torch.cat(idss, dim=0) # (N, seq_len)
         return idss
 
     def get_max_sent_len(self, path):
@@ -57,12 +50,15 @@ class Corpus(object):
                 if len(words) > max_sent_len:
                     max_sent_len = len(words)
                     max_sent = line
-        print("Maximum length sentence : {}".format(max_sent))
-        print("Maximum length : {}".format(max_sent_len))
+        # print("Maximum length sentence : {}".format(max_sent))
+        # print("Maximum length : {}".format(max_sent_len))
         return max_sent_len
 
-# Method to add padding as per max length of sample in each batch
-# input is list of samples in each batch and output is a tensor of samples of each batch
+# ########################################################################
+# # Method to add padding as per max length of sample in each batch
+# input - list of samples in each batch
+# output - tensor of samples in each batch
+# ########################################################################
 def add_padding(batch):
     max_src_batch_len = max([len(example['src']) for example in batch])
     max_tgt_batch_len = max([len(example['tgt']) for example in batch])
@@ -85,8 +81,12 @@ def add_padding(batch):
     return padded_src_batch_tensor, padded_tgt_batch_tensor
 
 
-# Method to detokenize i.e. convert idx to words and returns the sentence
-# It removes any special tokens
+# ########################################################################
+# # Method to detokenize i.e. convert idx to words
+# input - List of idx of a sentence, Vocabulary to convert from idx2word
+# output - Sentence of words
+# It ignores any special tokens (EOS,SOS,PAD)
+# ########################################################################
 def detokenize(x, vocab):
     words = []
     for i in x:
