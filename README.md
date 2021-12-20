@@ -106,9 +106,10 @@ As mentioned in the paper "Attention is All You Need" [2], I have used two types
 ## Results
 | Parameter    | Value   |
 |-------------|-------------|
-| Minimum train loss | 1.91 |
-| Minimum Validation loss | 1.81 |
+| Minimum train loss | 2.80 |
+| Minimum Validation loss | 1.95 |
 | BLEU Score (on Test data) | 44.65  |
+*Need to check why validation loss is lower than training loss. (Might be due to regularization techniques - dropout and label smoothening)*
 
 ## References
 
