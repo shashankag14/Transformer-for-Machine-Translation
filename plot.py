@@ -37,11 +37,11 @@ def create_plots():
 
 	min_train_loss = min(train_loss)
 	min_train_loss_epoch = train_loss.index(min_train_loss)
-	plt.axvline(x=min_train_loss_epoch, linestyle='--', color='r', label='Minimum training loss')
+	plt.axvline(x=min_train_loss_epoch, linestyle='--', color='r', label='Minimum training loss', alpha=0.5)
 
 	min_valid_loss = min(valid_loss)
 	min_valid_loss_epoch = valid_loss.index(min_valid_loss)
-	plt.axvline(x=min_valid_loss_epoch, linestyle='--', color = 'b', label='Minimum valid loss')
+	plt.axvline(x=min_valid_loss_epoch, linestyle='-.', color = 'b', label='Minimum valid loss', alpha=0.5)
 	ax1.legend()
 	plt.grid()
 	plt.savefig('results/training_plot.png')
