@@ -92,7 +92,7 @@ An illustration :
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Regularization Techniques :
-As mentioned in the paper "Attention is All You Need" [1], I have used two types of regularization techniques :
+As mentioned in the paper "Attention is All You Need" [2], I have used two types of regularization techniques :
 1. **Residual Dropout (dropout=0.4)** : Dropout has been added to embedding (positional+word) as well as to the output of each sublayer in Encoder and Decoder.
 2. **Label Smoothening (eps=0.1)** : Affected the training loss but improved the BLEU score.
 
