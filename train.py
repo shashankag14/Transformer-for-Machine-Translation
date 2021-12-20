@@ -11,6 +11,7 @@ import time
 from torch import nn, optim
 from torch.optim import Adam
 from tqdm import tqdm
+import torch.nn.functional as F
 
 # Local project files
 import utils
@@ -24,11 +25,11 @@ from bleu_metric import *
 # Ignore warnings
 import warnings
 warnings.filterwarnings("ignore")
+
 # To empty the cache for TQDM
 torch.cuda.empty_cache()
 
 MODEL_SANITY_CHECK = 0
-
 if MODEL_SANITY_CHECK:
 	src = torch.rand(25, 16)  # batch_size, seq_length
 	tgt = torch.rand(25, 16)  # batch_size, seq_length
@@ -46,6 +47,9 @@ def initialize_weights(m):
 	if hasattr(m, 'weight') and m.weight.dim() > 1:
 		nn.init.kaiming_uniform(m.weight.data)
 
+################################################################################
+## Initialisation of Dictionary, Dataset and Model
+################################################################################
 # Create dictionary
 corpus = tokenizer.Corpus()
 src_vocab_size = corpus.dictionary_src.n_word
@@ -74,6 +78,9 @@ model.apply(initialize_weights)
 ##### To load saved model and continue training
 # model.load_state_dict(torch.load('saved_chkpt/best_model.pt'))
 
+################################################################################
+## Loss function & Optimizer 
+################################################################################
 # Optimizer
 optimizer = Adam(params=model.parameters(),
                  lr=init_lr,
@@ -89,10 +96,16 @@ scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer,
 # Loss function (Cross entropy)
 criterion = nn.CrossEntropyLoss(ignore_index=dict.PAD_token)
 
-# Train loop for each epoch
-def train(model, iterator, optimizer, criterion, clip, epoch_num):
+################################################################################
+## Training loop for each epoch
+################################################################################
+def train(model, iterator, optimizer, criterion, clip, epoch_num, label_smoothening=False):
 	model.train()
 	epoch_loss = 0
+	if label_smoothening:
+		print("using label smoothening")
+	else:
+		print("No label smoothening")
 	with tqdm(iterator, unit="batches") as tepoch:
 		for batch_num, batch in enumerate(iterator.batches):
 			tepoch.set_description(f"Epoch {epoch_num}")
@@ -101,15 +114,40 @@ def train(model, iterator, optimizer, criterion, clip, epoch_num):
 			src, trg = src.to(device), trg.to(device)
 
 			optimizer.zero_grad()
-			output = model(src, trg)  # trg[:,:-1] doesnt work as output is [N,seq_len] and so is src
+			# output -> (N, seq_len, tgt_vocab_size) ; # trg -> (N, seq_len)
+			output = model(src, trg) 
 
-			# Reshape output and trg before computing the loss
+			# removing the first token of <SOS> and then flattening 2D to 1D tensor
 			output_reshape = output[:, 1:].contiguous().view(-1, output.shape[-1])
-			trg = trg[:, 1:].contiguous().view(-1) # removing the first token of <SOS> and then flattening 2D to 1D tensor
+			trg = trg[:, 1:].contiguous().view(-1)
 
-			# output_reshape : (N*seq_len, model_dim), tgt : (N*seq_len)
-			# Compute batch loss
-			loss = criterion(output_reshape, trg)
+			##########################################################################
+			## Label Smoothening (Regularization technique)
+			##########################################################################
+			# label smoothening only being used for training and not for validation
+			if label_smoothening:
+				# "Smoothed" one-hot vectors for the target sequences
+				# (N*seq_len, trg_vocab_size)-> one-hot
+				target_vector = torch.zeros_like(output_reshape).scatter(dim=1, index=trg.unsqueeze(1),value=1.).to(device)
+
+				# (N*seq_len, trg_vocab_size)-> "smoothed" one-hot; (-2 to ignore <pad> and target label)
+				target_vector = target_vector * (1. - label_smooth_eps) + label_smooth_eps / (target_vector.size(1)-2)
+
+				# 1D tensor : (N*seq_len)-> Compute smoothed cross-entropy loss
+				loss = (-1 * target_vector * F.log_softmax(output_reshape, dim=1)).sum(dim=1)
+				# Create mask for locations of <PAD token in target (N*seq_len)
+				non_pad_mask = trg.ne(dict.PAD_token) 
+
+				# Ignore <PAD> while avging loss, thus this 1D tensor might be smaller 
+				# than the previous 1D loss tensor
+				loss = loss.masked_select(non_pad_mask) 
+				# Final avg batch loss : Sum the non pad mask losses and divide by
+				# number of non pad masks
+				loss = loss.sum()/loss.size(0) 
+
+			else :
+				# flattening 2D to 1D tensor
+				loss = criterion(output_reshape, trg)
 
 			# Backprop
 			loss.backward()
@@ -124,14 +162,12 @@ def train(model, iterator, optimizer, criterion, clip, epoch_num):
 
 		# To empty the cache for TQDM
 		torch.cuda.empty_cache()
-		# list(getattr(tqdm, '_instances'))
-		# for instance in list(tqdm._instances):
-		# 	tqdm._decr_instances(instance)
-		# print('step :', round((batch_num / len(iterator)) * 100, 2), '% , loss :', loss.item())
 
 	return epoch_loss / len(iterator)
 
-# Validation loop for each epoch
+################################################################################
+## Validation loop for each epoch
+################################################################################
 def evaluate(model, iterator, criterion):
 	model.eval()
 	epoch_loss = 0
@@ -164,7 +200,9 @@ def evaluate(model, iterator, criterion):
 	batch_bleu = sum(batch_bleu) / len(batch_bleu)
 	return epoch_loss / len(iterator), batch_bleu
 
-
+################################################################################
+## Run epochs - train and validation in each epoch
+################################################################################
 def run(total_epoch, best_loss):
 	train_losses, test_losses, bleus = [], [], []
 	for step in range(total_epoch):
@@ -172,7 +210,7 @@ def run(total_epoch, best_loss):
 
 		# Create batches - needs to be called before each loop.
 		train_dataloader.create_batches()
-		train_loss = train(model, train_dataloader, optimizer, criterion, clip, step)
+		train_loss = train(model, train_dataloader, optimizer, criterion, clip, step, label_smoothening = True)
 
 		valid_dataloader.create_batches()
 		valid_loss, bleu = evaluate(model, valid_dataloader, criterion)

@@ -70,6 +70,8 @@ parser.add_argument('--clip', type=float, default=1.0,
                     help='Gradient clipping')
 parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
+parser.add_argument('--label_smooth_eps', type=float, default=0.1,
+                    help='Hyper-parameter for label smoothening')
 
 args = parser.parse_args()
 
@@ -91,4 +93,5 @@ warmup = args.optim_warmup
 epoch = args.epoch
 clip = args.clip
 weight_decay = args.optim_weight_decay
+label_smooth_eps = args.label_smooth_eps
 inf = float('inf')
