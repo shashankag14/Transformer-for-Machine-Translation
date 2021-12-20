@@ -37,15 +37,15 @@ model = Transformer(src_vocab_size,
 # # Fetch Test Dataloader
 # ########################################################################
 _, _, test_dataloader = dataloader.get_dataloader(corpus.tokenize_src,corpus.tokenize_tgt)
-# print("Size of Test datasets :", len(test_dataloader))
-
 # ########################################################################
 # # Run the test using best_model.pt checkpoint and compute BLEU score
+# # Translations will be saved in /results/translation_results.txt
 # ########################################################################
 def test_model(dataloader):
     model.load_state_dict(torch.load("saved_chkpt/best_model.pt"))
     with torch.no_grad():
         batch_bleu = []
+        f = open('results/translation_results.txt', 'w')        
         for i, batch in enumerate(dataloader.batches):
             src, trg = tokenizer.add_padding(batch)
             src, trg = src.to(device), trg.to(device)
@@ -58,6 +58,8 @@ def test_model(dataloader):
                 trg_words = tokenizer.detokenize(trg[j].tolist(), corpus.dictionary_tgt)
                 output_words = output[j].max(dim=1)[1]
                 output_words = tokenizer.detokenize(output_words.tolist(), corpus.dictionary_tgt)
+                
+                f.write("Source : {}\nTarget : {}\nPredicted : {}\n".format(src_words, trg_words, output_words))
 
                 print('source :', src_words)
                 print('target :', trg_words)
@@ -74,6 +76,9 @@ def test_model(dataloader):
         batch_bleu = sum(batch_bleu) / len(batch_bleu)
         print('TOTAL BLEU SCORE = {}'.format(batch_bleu))
 
+        f.write("#"*10)
+        f.write("TOTAL BLEU SCORE : {}".format(batch_bleu))
+        f.close()
 
 if __name__ == '__main__':
     # Create batches - needs to be called before each loop.
