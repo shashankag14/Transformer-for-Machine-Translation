@@ -7,6 +7,7 @@
 import torch
 from torch import Tensor
 from torch import nn
+import torch.nn.functional as F
 
 from model.position_embedding import PositionEmbedding
 from model.attention import MultiHeadAttention
@@ -105,4 +106,5 @@ class TransformerDecoder(nn.Module):
         for layer in self.layers:
             tgt = layer(tgt, memory, src_mask, tgt_mask)
 
+        # Softmax skipped : Using Cross entropy loss wherein softmax is already included
         return self.linear(tgt)
