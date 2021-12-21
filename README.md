@@ -48,27 +48,28 @@ python3 test.py
 
 ### Arguments for train.py
 
-| Parameters | Description | Default Value |
-| --- | --- | --- |
-| `--src_data` | Location of the source data | |
-| `--tgt_data` | Location of the target data | |
-| `--epoch` | Number of epochs to train | 40 |
-| `--batch_size` | Batch size | 32 |
-| `--d_model` | Size of word embedding | 512 |
-| `--n_layers` | Number of enc/dec layers | 6 |
-| `--n_heads` | Number of attention heads | 8 |
-| `--ffn_hidden` | Number of hidden units in FFN | 2048 |
-| `--dropout` | Dropout probability | 0.4 |
-| `--max_sent_len` | Maximum length of sentence for train/valid/test | 10 |
-| `--init_lr` | Initial Learning Rate | 5e-5 |
-| `--scheduler_factor` | Factor with which LR will decreasing using scheduler | 0.9 |
-| `--optim_adam_eps` | Adam epsilon | 5e-9 |
-| `--optim_patience` | Number of epochs optimizer waits before decreasing LR | 8 |
-| `--optim_warmup` | Optimizer warmup | 100 |
-| `--optim_weight_decay` | Weight decay factor for optimizer | 5e-4 |
-| `--clip` | Gradient clipping threshold to prevent exploding gradients | 1.0 |
-| `--seed` | Seed for reproducibility | 1111 |
-| `--label_smooth_eps` | Hyper-parameter for label smoothening | 0.1 |
+| Parameters | Description | Value used | Value (in the paper) |
+| --- | --- | --- | --- |
+| `--src_data` | Location of the source data | | |
+| `--tgt_data` | Location of the target data | | |
+| `--epoch` | Number of epochs to train | 40 | N/A |
+| `--batch_size` | Batch size | 32 | N\A |
+| `--d_model` | Size of word embedding | 512 | 512 |
+| `--n_layers` | Number of enc/dec layers | 6 | 6 |
+| `--n_heads` | Number of attention heads | 8 | 8 |
+| `--ffn_hidden` | Number of hidden units in FFN | 2048 | 2048 |
+| `--dropout` | Dropout probability | 0.4 | 0.1 |
+| `--max_sent_len` | Maximum length of sentence for train/valid/test | 10 | N/A |
+| `--init_lr` | Initial Learning Rate | 5e-5 | N/A |
+| `--scheduler_factor` | Factor with which LR will decreasing using scheduler | 0.9 | 0.9 |
+| `--optim_adam_eps` | Adam epsilon | 5e-9 | 1e-9 |
+| `--optim_patience` | Number of epochs optimizer waits before decreasing LR | 8 | N/A |
+| `--optim_warmup` | Optimizer warmup | 100 | 4000 |
+| `--optim_weight_decay` | Weight decay factor for optimizer | 5e-4 | N/A |
+| `--clip` | Gradient clipping threshold to prevent exploding gradients | 1.0 | N/A |
+| `--seed` | Seed for reproducibility | 1111 | N/A |
+| `--label_smooth_eps` | Hyper-parameter for label smoothening | 0.1 | 0.1 |
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Model :
