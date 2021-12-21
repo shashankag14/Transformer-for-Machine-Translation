@@ -1,0 +1,116 @@
+Source : predchazejici
+Target : prev
+Predicted : prev prev
+
+Source : dalsi
+Target : next
+Predicted : next 
+
+Source : dalsi
+Target : next
+Predicted : 
+
+Source : predchazejici
+Target : prev
+Predicted : prev
+
+Source : domu
+Target : home
+Predicted : home
+
+Source : dalsi
+Target : next
+Predicted : next
+
+Source : dalsi
+Target : next
+Predicted : 
+
+Source : nahoru
+Target : up
+Predicted : up
+
+Source : predchazejici
+Target : prev
+Predicted : prev
+
+Source : varovani
+Target : warning
+Predicted : 
+
+Source : predchazejici
+Target : prev
+Predicted : prev prev prev
+
+Source : varovani
+Target : warning
+Predicted : 
+
+Source : domu
+Target : home
+Predicted : home
+
+Source : poznamka
+Target : the closing tag for the block will include the immediately trailing newline if one is present .
+Predicted : . . . . .
+
+Source : dalsi
+Target : next
+Predicted : next 
+
+Source : predchazejici
+Target : prev
+Predicted : prev prev prev prev prev prev prev prev prev prev
+
+Source : satellite
+Target : pdf
+Predicted : 
+
+Source : predchazejici
+Target : prev
+Predicted : prev
+
+Source : predchazejici
+Target : no external libraries are needed to build this extension .
+Predicted : . example . . .
+
+Source : predchazejici
+Target : this extension has no configuration directives defined in php .ini .
+Predicted : 
+
+Source : priklad .
+Target : sending mail with extra headers .
+Predicted : example .
+
+Source : priklad .
+Target : up to php . . the user defined functions would keep the original order for those elements but with the new sort algorithm intruduced with . . this is no longer the case as there is no solution to do so in an efficient way .
+Predicted : is the the the . the . the the . the . . the the the the . . . . the the the .
+
+Source : tabulka .
+Target : table .
+Predicted : .
+
+Source : ladici zprava
+Target : debug level message
+Predicted : 
+
+Source : manual php
+Target : php manual
+Predicted : php manual
+
+Source : manual php
+Target : php manual
+Predicted : manual manual manual manual manual manual manual php php manual manual manual
+
+Source : priklad .
+Target : here is an example that uses the curl functions to fetch the example .com homepage into a file
+Predicted : . . .
+
+
+Source : viz take pdf end page .
+Target : common page sizes in points
+Predicted : . . . . . . . . . .
+
+Source : the possible values for mode are fill text stroke text fill and stroke text invisible fill text and add it to cliping path stroke text and add it to clipping path fill and stroke text and add it to cliping path add it to clipping path .
+Target : see pdf set value
+Predicted : 
