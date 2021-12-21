@@ -52,7 +52,7 @@ python3 test.py
 | --- | --- | --- |
 | `--src_data` | Location of the source data | |
 | `--tgt_data` | Location of the target data | |
-| `--epoch` | Number of epochs to train | 200 |
+| `--epoch` | Number of epochs to train | 40 |
 | `--batch_size` | Batch size | 32 |
 | `--d_model` | Size of word embedding | 512 |
 | `--n_layers` | Number of enc/dec layers | 6 |
@@ -118,6 +118,8 @@ As mentioned in the paper "Attention is All You Need" [2], I have used two types
 *Need to check why validation loss is lower than training loss. (Might be due to regularization techniques - dropout and label smoothening)*
 
 `results/random_machine_translations.txt` : Some random machine translated sentences from test dataset have been generated using the saved checkpoint.
+
+*Note : Due to limited availibilty of GPU resources, I could only train the model for 40-50 epochs.*
 
 ## References
 
