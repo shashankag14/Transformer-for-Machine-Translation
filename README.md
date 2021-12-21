@@ -9,8 +9,8 @@ A PyTorch implementation of Transformers from scratch for Machine Translation on
 ## Getting Started : 
 
 ### Downloading
-1. Download the data using **scripts/download_data.sh**.  
-Note: Extract **PHP.cs-en.cs** and **PHP.cs-en.en** files from the downloaded zip file and move them inside **data/**
+1. Download the data using `scripts/download_data.sh`.  
+Note: Extract `PHP.cs-en.cs` and `PHP.cs-en.en` files from the downloaded zip file and move them inside `data/`
 ```
 sh scripts/download_data.sh
 ```
@@ -36,12 +36,12 @@ python3 train.py [-h] [--src_data SRC_DATA] [--tgt_data TGT_DATA]
                 [--label_smooth_eps LABEL_SMOOTH_EPS]
 ```
 
-2. Run below code to plot Train/Valid Loss vs Epoch and save in **results/** (this step can be done anytime after executing step 1):
+2. Run below code to plot Train/Valid Loss vs Epoch and save in `results/` (this step can be done anytime after executing step 1):
 ```
 python3 plot.py
 ```
 
-2. Use the saved checkpoints (**saved_ckpt/best_model.pt**) to test the model :
+2. Use the saved checkpoints (`saved_ckpt/best_model.pt`) to test the model :
 ```
 python3 test.py
 ```
@@ -115,8 +115,9 @@ As mentioned in the paper "Attention is All You Need" [2], I have used two types
 
 <img src="https://user-images.githubusercontent.com/74488693/146922221-f69899b0-f4c7-4b87-a42c-2f2062826203.png" height="350" width="420">
 
-
 *Need to check why validation loss is lower than training loss. (Might be due to regularization techniques - dropout and label smoothening)*
+
+`results/random_machine_translations.txt` : Some random machine translated sentences from test dataset have been generated using the saved checkpoint.
 
 ## References
 
