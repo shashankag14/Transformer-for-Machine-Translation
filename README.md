@@ -77,19 +77,22 @@ python3 test.py
 
 ### Multi Headed Attention Block in Encoder/Decoder:
 <img src="https://user-images.githubusercontent.com/74488693/144745249-5c99709d-0446-45fc-a4cb-f0428ead371e.png" height="300" width="600">
-
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Computing Attention using Key, Query and Value :
-<img src="https://user-images.githubusercontent.com/74488693/146268694-0c8517a1-5795-4efa-a51b-23bae6fab520.png" height="100" width="350">
-An illustration :
-
 <img src="https://user-images.githubusercontent.com/74488693/146843949-2ae064f2-49da-4c99-ac25-690a8b4fd910.png" height="600" width="500">
+<img src="https://user-images.githubusercontent.com/74488693/146268694-0c8517a1-5795-4efa-a51b-23bae6fab520.png" height="90" width="350">
 
-
-### Positional Embedding using sin/cos :
-<img src="https://user-images.githubusercontent.com/74488693/146268889-723d15a5-2d18-48ba-85a9-936f72ce646f.png" height="100" width="350">
+### Positional Embedding using sin/cos : 
+<img src="https://user-images.githubusercontent.com/74488693/146268889-723d15a5-2d18-48ba-85a9-936f72ce646f.png" height="90" width="340">
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+## Data :
+* Dataset splitting (# of sentences in each dataset)
+    * Training : Validation : Test :: 25165 : 1391 : 1372
+* `src_vocab_size` : 9211
+* `trg_vocab_size` :  4849
 
 ## Regularization Techniques :
 As mentioned in the paper "Attention is All You Need" [2], I have used two types of regularization techniques :
@@ -109,6 +112,10 @@ As mentioned in the paper "Attention is All You Need" [2], I have used two types
 | Minimum train loss | 2.80 |
 | Minimum Validation loss | 1.95 |
 | BLEU Score (on Test data) | 44.65  |
+
+<img src="https://user-images.githubusercontent.com/74488693/146922221-f69899b0-f4c7-4b87-a42c-2f2062826203.png" height="350" width="420">
+
+
 *Need to check why validation loss is lower than training loss. (Might be due to regularization techniques - dropout and label smoothening)*
 
 ## References
