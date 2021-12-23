@@ -45,7 +45,7 @@ parser.add_argument('--n_heads', type=int, default=8,
                     help='number of en/dec blocks')
 parser.add_argument('--ffn_hidden', type=int, default=2048,
                     help='number of hidden units in FFN')
-parser.add_argument('--dropout', type=float, default=0.4,
+parser.add_argument('--dropout', type=float, default=0.25,
                     help='dropout probability')
 parser.add_argument('--max_sent_len', type=int, default=10,
                     help='Maximum length of sentence to use for train/valid/test')
@@ -59,12 +59,12 @@ parser.add_argument('--optim_adam_eps', type=float, default=5e-9,
                     help='Adam epsilon')
 parser.add_argument('--optim_patience', type=int, default=8,
                     help='Number of epochs optimizer will wait before decreasing LR')
-parser.add_argument('--optim_warmup', type=int, default=100,
+parser.add_argument('--optim_warmup', type=int, default=4000,
                     help='Optimizer warmup')
 parser.add_argument('--optim_weight_decay', type=int, default=5e-4,
                     help='Weight decay factor for optimizer')
 
-parser.add_argument('--epoch', type=int, default=1000,
+parser.add_argument('--epoch', type=int, default=50,
                     help='Number of epochs to train')
 parser.add_argument('--clip', type=float, default=1.0,
                     help='Gradient clipping')
