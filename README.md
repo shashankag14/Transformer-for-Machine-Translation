@@ -1,7 +1,7 @@
 <div id="top"></div>
 
 # Transformer-for-Machine-Translation
-A PyTorch implementation of Transformers from scratch for Machine Translation on PHP Corpus dataset[1] based on "Attention Is All You Need" by Ashish Vaswani et. al.[2]
+A PyTorch implementation of Transformers from scratch for Machine Translation on PHP Corpus dataset[1] (Czech->English) based on "Attention Is All You Need" by Ashish Vaswani et. al.[2]
 
 ![image](https://user-images.githubusercontent.com/74488693/146843786-d2b240cc-8aca-402d-9165-28ca8a5405b9.png)
 
@@ -58,13 +58,13 @@ python3 test.py
 | `--n_layers` | Number of enc/dec layers | 6 | 6 |
 | `--n_heads` | Number of attention heads | 8 | 8 |
 | `--ffn_hidden` | Number of hidden units in FFN | 2048 | 2048 |
-| `--dropout` | Dropout probability | 0.4 | 0.1 |
+| `--dropout` | Dropout probability | 0.25 | 0.1 |
 | `--max_sent_len` | Maximum length of sentence for train/valid/test | 10 | N/A |
 | `--init_lr` | Initial Learning Rate | 5e-5 | N/A |
 | `--scheduler_factor` | Factor with which LR will decreasing using scheduler | 0.9 | 0.9 |
 | `--optim_adam_eps` | Adam epsilon | 5e-9 | 1e-9 |
 | `--optim_patience` | Number of epochs optimizer waits before decreasing LR | 8 | N/A |
-| `--optim_warmup` | Optimizer warmup | 100 | 4000 |
+| `--optim_warmup` | Optimizer warmup | 4000 | 4000 |
 | `--optim_weight_decay` | Weight decay factor for optimizer | 5e-4 | N/A |
 | `--clip` | Gradient clipping threshold to prevent exploding gradients | 1.0 | N/A |
 | `--seed` | Seed for reproducibility | 1111 | N/A |
@@ -110,11 +110,12 @@ As mentioned in the paper "Attention is All You Need" [2], I have used two types
 ## Results
 | Parameter    | Value   |
 |-------------|-------------|
-| Minimum train loss | 2.80 |
-| Minimum Validation loss | 1.95 |
-| BLEU Score (on Test data) | 44.65  |
+| Minimum train loss | 2.79 |
+| Minimum Validation loss | 1.89 |
+| BLEU Score (on Test data) | 55.2  |
 
-<img src="https://user-images.githubusercontent.com/74488693/146922221-f69899b0-f4c7-4b87-a42c-2f2062826203.png" height="350" width="420">
+<img src="https://user-images.githubusercontent.com/74488693/147237138-aacb2e8d-f001-441e-a01f-04fcba080afc.png" height="350" width="420">
+Model checkpoints can be downlaoded from : https://drive.google.com/drive/folders/1DbdzSB4ioixfj-yXnaiZ0Bs61kpjzcc7?usp=sharing
 
 *Need to check why validation loss is lower than training loss. (Might be due to regularization techniques - dropout and label smoothening)*
 
