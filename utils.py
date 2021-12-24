@@ -13,10 +13,11 @@ def compute_time(start_time, end_time):
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Directories for local files
-src_ext = "cs"
-tgt_ext = "en"
-src_data_path = "data/PHP.cs-en." + src_ext
-tgt_data_path = "data/PHP.cs-en." + tgt_ext
+orig_src_data_path = "data/PHP.cs-en.cs"
+orig_tgt_data_path = "data/PHP.cs-en.en"
+
+src_data_path = "data/preprocessed_src.txt"
+tgt_data_path = "data/preprocessed_trg.txt"
 
 saved_chkpt = 'saved_chkpt/'
 if not os.path.exists(saved_chkpt):

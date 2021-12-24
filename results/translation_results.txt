@@ -1,116 +1,340 @@
-Source : predchazejici
-Target : prev
-Predicted : prev prev
-
-Source : dalsi
-Target : next
-Predicted : next 
-
-Source : dalsi
-Target : next
-Predicted : 
-
-Source : predchazejici
-Target : prev
-Predicted : prev
-
-Source : domu
-Target : home
-Predicted : home
-
-Source : dalsi
-Target : next
-Predicted : next
-
-Source : dalsi
-Target : next
-Predicted : 
-
-Source : nahoru
-Target : up
-Predicted : up
-
-Source : predchazejici
-Target : prev
-Predicted : prev
-
 Source : varovani
-Target : warning
-Predicted : 
-
+Target : since php . . the year parameter is optional and defaults to the current year according to the localtime if ommited .
+Predicted : . the the the
 Source : predchazejici
 Target : prev
-Predicted : prev prev prev
-
-Source : varovani
-Target : warning
 Predicted : 
-
-Source : domu
-Target : home
-Predicted : home
-
-Source : poznamka
-Target : the closing tag for the block will include the immediately trailing newline if one is present .
-Predicted : . . . . .
-
-Source : dalsi
-Target : next
-Predicted : next 
-
-Source : predchazejici
-Target : prev
-Predicted : prev prev prev prev prev prev prev prev prev prev
-
-Source : satellite
-Target : pdf
+Source : konstanta
+Target : constant
+Predicted : example . . .
+Source : questions
+Target : questions
+Predicted : example example example example example example example example example example example example example example example example example example example example example example example
+Source : jmeno
+Target : table .
+Predicted : .
+Source : neidentita
+Target : not identical
 Predicted : 
-
-Source : predchazejici
-Target : prev
-Predicted : prev
-
-Source : predchazejici
-Target : no external libraries are needed to build this extension .
-Predicted : . example . . .
-
-Source : predchazejici
-Target : this extension has no configuration directives defined in php .ini .
-Predicted : 
-
+Source : funkce
+Target : by default safe mode does a uid compare check when opening files .
+Predicted : . the the the the . the the . the . the the the
+Source : juliansky zkraceny
+Target : jan feb mar apr may jun jul aug sep oct nov dec
+Predicted : . the . of
 Source : priklad .
-Target : sending mail with extra headers .
-Predicted : example .
-
-Source : priklad .
-Target : up to php . . the user defined functions would keep the original order for those elements but with the new sort algorithm intruduced with . . this is no longer the case as there is no solution to do so in an efficient way .
-Predicted : is the the the . the . the the . the . . the the the the . . . . the the the .
-
+Target : example .
+Predicted : example example example example . example example example . example example example example . example example example example example example example example
+Source : ukazka extract
+Target : a possible use for extract is to import into the symbol table variables contained in an associative array returned by wddx deserialize .
+Predicted : the . the the . the is the the . the
+Source : ukazka copy
+Target : see fopen for more details .
+Predicted : .
+Source : pre dekrementace
+Target : pre decrement
+Predicted : 
+Source : a b
+Target : bar bar
+Predicted : . example example . example . . example .
+Source : argumenty funkci
+Target : function arguments
+Predicted : .
 Source : tabulka .
 Target : table .
 Predicted : .
-
-Source : ladici zprava
-Target : debug level message
+Source : navratove hodnoty
+Target : returning values
 Predicted : 
-
-Source : manual php
-Target : php manual
-Predicted : php manual
-
-Source : manual php
-Target : php manual
-Predicted : manual manual manual manual manual manual manual php php manual manual manual
-
+Source : proc ?
+Target : why ?
+Predicted : .
+Source : ukazka uksort
+Target : example . uksort example
+Predicted : example . example . example example example example example example example example example example example example example example . example example example example example example example example example example
+Source : filepro rowcount
+Target : as of php . . this directive can take a semi colon separated path in a similar fashion to the include path directive rather than just a single directory .
+Predicted : . the . the the the . the . . the the the the the the the . the .
 Source : priklad .
-Target : here is an example that uses the curl functions to fetch the example .com homepage into a file
-Predicted : . . .
-
-
-Source : viz take pdf end page .
-Target : common page sizes in points
-Predicted : . . . . . . . . . .
-
-Source : the possible values for mode are fill text stroke text fill and stroke text invisible fill text and add it to cliping path stroke text and add it to clipping path fill and stroke text and add it to cliping path add it to clipping path .
-Target : see pdf set value
+Target : example .
+Predicted : example example example example example example example example example example example example example example example example example . example example example example . example example example .
+Source : reference funkca
+Target : function reference
+Predicted : . .
+Source : priklad .
+Target : example .
+Predicted : example example example example example example example example example example example example example example . example example example . example example example example . example example . example
+Source : stara funkce
+Target : when using version .x of pdflib you should configure pdflib with the option enable shared pdflib .
+Predicted : . the the the the the the the the the . the the the
+Source : ukazka in array
+Target : example . in array example
+Predicted : example example example example example example example example example example example example example example example example example example example example example example example example example example example example
+Source : php a html
+Target : php and html
+Predicted : example example example example . . example example example example .
+Source : priklad . bzdecompress
+Target : example . bzdecompress
+Predicted : example . example . example . example example example example example example . example example example example example example . example
+Source : ukazka array slice
+Target : example . array slice examples
+Predicted : example . example example example example example example . example example example . example example example . example example example example example example example
+Source : ladeni debugging php
+Target : debugging php
+Predicted : .
+Source : priklad e .
+Target : example e .
+Predicted : example . example example . example example example example example . example example example example example example example example example . example example example
+Source : kontext scope promenne
+Target : variable scope
+Predicted : . .
+Source : priklad c .
+Target : example c .
+Predicted : example example example example example example example example example example example example example example example example example example example example example example example . example example example example
+Source : ukazka array merge
+Target : simple array merge example
+Predicted : . .
+Source : moznosti nastaveni mysql
+Target : the behaviour of these functions is affected by settings in php .ini .
 Predicted : 
+Source : priloha a .
+Target : appendix a .
+Predicted : . . . example example . example example
+Source : tm sec sekunda
+Target : tm sec seconds
+Predicted : 
+Source : sort tridi pole .
+Target : this function sorts an array .
+Predicted : 
+Source : priklad . getimagesize file
+Target : example . getimagesize file
+Predicted : example example example example example example example example example example example example example
+Source : viz take long ip
+Target : see also long ip
+Predicted : .
+Source : and log . soucin
+Target : and
+Predicted : . example
+Source : priklad . hexdec example
+Target : example . hexdec example
+Predicted : . example example example example example . example . example example
+Source : viz take bzopen .
+Target : see also bzopen .
+Predicted : 
+Source : setcookie mycookie testing time
+Target : this is the same restriction as for the header function .
+Predicted : .
+Source : tm year roky od
+Target : tm year years since
+Predicted : example example . example
+Source : priklad . swftext example
+Target : example . swftext example
+Predicted : example example example example example example example example example example example .
+Source : data v radku .
+Target : line data .
+Predicted : 
+Source : result obsahuje array blue
+Target : this was broken in php . . !
+Predicted : .
+Source : priklad . aspell check
+Target : example . aspell check
+Predicted : example example example . example . example example example example example example example
+Source : mday den v mesici
+Target : mday day of the month
+Predicted : 
+Source : priklad . ksort example
+Target : example . ksort example
+Predicted : example example example example example example . example example example example example example example . example example
+Source : priklad . mysql query
+Target : example . mysql query
+Predicted : example example . example example example example example example example example example example example example example example example
+Source : nasledujte peclive tyto kroky
+Target : follow these steps carefully
+Predicted : 
+Source : promenne s promennymi nazvy
+Target : variable variables
+Predicted : example
+Source : priklad . pg delete
+Target : example . pg delete
+Predicted : . example example example example example example example example example example example example example example
+Source : priklad . pspell new config
+Target : example . pspell new config
+Predicted : example example . example example example example . example example example example example example example example example example
+Source : viz take method exists .
+Target : see also method exists and get defined functions .
+Predicted : the .
+Source : druhe pole bude obsahovat .
+Target : the second array will contain .
+Predicted : 
+Source : toto je seznam aliasu .
+Target : here is the aliases list .
+Predicted : .
+Source : rozdil a a b .
+Target : ?
+Predicted : 
+Source : detaily viz clibpdf funkce .
+Target : please note that most of the pdf functions require a pdf object as its first parameter .
+Predicted : the . . of the the
+Source : spocita soundex klic str .
+Target : calculates the soundex key of str .
+Predicted : 
+Source : viz take pdf save .
+Target : restore the most recently saved graphics state .
+Predicted : 
+Source : priklad . include pres http
+Target : warning
+Predicted : .
+Source : priklad . ob gzhandler example
+Target : example . ob gzhandler example
+Predicted : example example example . . . example example example example example example example example example example
+Source : priklad . str shuffle example
+Target : example . str shuffle example
+Predicted : example example example example example . example example . example example example example example example example .
+Source : priklady najdete v dokumentaci .
+Target : see the documentation for these functions for an example .
+Predicted : 
+Source : priklad . openssl sign example
+Target : example . openssl sign example
+Predicted : . . example example example example example example example . example example example example
+Source : prehled operaci se sdilenou pameti
+Target : example .
+Predicted : example example example . . example example example example example example example example
+Source : rok je mezi a vcetne
+Target : year is between and inclusive
+Predicted : 
+Source : viz take pdf closepath .
+Target : deprecated use one of the stroke fill or clip functions instead .
+Predicted : 
+Source : napriklad priklad apache httpd .conf
+Target : php ini system
+Predicted : .
+Source : priklad . ingres query example
+Target : example . ingres query example
+Predicted : example example example example . example example example example example example example
+Source : priklad . mb strtoupper example
+Target : example . mb strtoupper example
+Predicted : example . example . . example example . .
+Source : otviraci uzaviraci znacky start end tags
+Target : start end tags
+Predicted : 
+Source : priklad . mysql db name priklad
+Target : example . mysql db name example
+Predicted : example example example example . example example example example example . example .
+Source : viz take opacnou funkci ebcdic ascii
+Target : see also the reverse function ebcdic ascii
+Predicted : .
+Source : ukazka in array s argumentem strict
+Target : this will display
+Predicted : .
+Source : predchozi priklad by zobrazil nasledujici vystup
+Target : the above example would produce the following output
+Predicted : .
+Source : toto je nyni velmi snadne .
+Target : this is actually quite easy .
+Predicted : 
+Source : priklad . mysql escape string priklad
+Target : example . mysql escape string example
+Predicted : example example example . . example . example example example example example
+Source : toto je alias k current .
+Target : this is an alias for current .
+Predicted : 
+Source : priklad . fbsql read blob example
+Target : example . fbsql read blob example
+Predicted : . example example example example example example example example example example example example example . example example example example example example example example example example
+Source : myslim ze jsem nasel chybu !
+Target : i think i found a bug !
+Predicted : 
+Source : toto je alias k ini set
+Target : this is an alias of ini set
+Predicted : 
+Source : pri chybe vraci nebo false .
+Target : similar to the unix c unlink function .
+Predicted : .
+Source : priklad . unserialize callback func example
+Target : example . unserialize callback func example
+Predicted : example example example example example example example example example example example example example example example example example example example example example example example example example .
+Source : nazvy klicu tohoto pole jsou nasledujici
+Target : the names of the different keys of the associative array are as follows
+Predicted : the . . the the . the the the
+Source : priklad . disk total space example
+Target : example . disk total space example
+Predicted : example example . . example . example . example example . example example example example . example example . example example example example example example
+Source : viz take fseek a ftell .
+Target : see also fseek and ftell .
+Predicted : . example . . example example example example example example example example example example . example
+Source : viz take htmlspecialchars htmlentities a wordwrap .
+Target : see also htmlspecialchars htmlentities wordwrap and str replace .
+Predicted : .
+Source : promenne poskytovane skriptu pres http cookies .
+Target : variables provided to the script via http post .
+Predicted : the the . . the
+Source : cookies muzete nastavovat pomoci funkce setcookie .
+Target : cookies are part of the http header so setcookie must be called before any output is sent to the browser .
+Predicted : the . the . the the the
+Source : viz take pdf arc pdf stroke .
+Target : draw a circle with center x y and radius r .
+Predicted : . . . the
+Source : md sha gost a mnoho jinych .
+Target : this is an interface to the mhash library . mhash supports a wide variety of hash algorithms such as md sha gost and many others .
+Predicted : . the the the of . the . the . . the the the . .
+Source : tabulka . syslog priority v klesajicim poradku
+Target : table . syslog priorities in descending order
+Predicted : . .
+Source : php ma jiz za sebou dlouhou historii
+Target : php has already a long history behind him
+Predicted : . the . . . the the
+Source : php nema vnitrni mechanismy pro ladeni .
+Target : php does not have an internal debugging facility .
+Predicted : .
+Source : tm mon mesic v roce pocinaje leden
+Target : tm mon month of the year starting with for january
+Predicted : . the
+Source : priklad . mb preferred mime string example
+Target : example . mb preferred mime string example
+Predicted : example example example example example example example example example . example example example example example example example example example example example example example
+Source : soubor ktery obsahuje vstup curl transferu .
+Target : the file where the output of your transfer should be placed the default is stdout .
+Predicted : the . the
+Source : viz take pdf closepath pdf stroke .
+Target : close the path and stroke it .
+Predicted : .
+Source : u verzi do php . . .
+Target : to release a lock shared or exclusive set operation to lock un set to prior to php . . .
+Predicted : the . . the . the the . the
+Source : viz take symlink link a readlink .
+Target : returns or false in case of error .
+Predicted : .
+Source : dokumentace je ulozena v modulu phpdoc .
+Target : the documentation is stored in the phpdoc module .
+Predicted : . . the the
+Source : constant and constant reprezentuji ruzne hodnoty .
+Target : example .
+Predicted : example example example example . example example example example example example example example example example example example . . example example example
+Source : u den v tydnu jako desitkove cislo reprezentuje pondeli
+Target : a literal character
+Predicted : .
+Source : hej co se stalo s mymi konci radku ?
+Target : hey what happened to my newlines ?
+Predicted : the . of
+Source : pdf set info s subject jako druhy argument .
+Target : pdf put image
+Predicted : 
+Source : pozn . prekladatele cestina nema adekvatni termin pro mailing list .
+Target : .
+Predicted : . . . example example . .
+Source : to aktualne nema nic spolecneho s php ale s knihovnami klienta mysql .
+Target : .
+Predicted : example example example example . example example example example example example example example example example example example example example example example example example
+Source : funkce pdf set horiz scaling function sets the horizontal scaling to scale percent .
+Target : see also pdf set value
+Predicted : example example example example example example example example example example example example example example example
+Source : to muze vest k velmi zahadnemu chovani kdy skripty nepracuji aniz by vydaly jakoukoli zpravu o chybe .
+Target : warning
+Predicted : .
+Source : standardni trideni array img .png img .png img .png img .png prirozene trideni array img .png img .png img .png img .png
+Target : note
+Predicted : .
+Source : funkce pdf set border style funkce pdf set border style function sets the style and width of the suroundig box of links and annotations .
+Target : php . . php
+Predicted : .
+##########TOTAL BLEU SCORE : 8.874989649014774

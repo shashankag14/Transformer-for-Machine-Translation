@@ -54,7 +54,7 @@ def initialize_weights(m):
 corpus = tokenizer.Corpus()
 src_vocab_size = corpus.dictionary_src.n_word
 tgt_vocab_size = corpus.dictionary_tgt.n_word
-print("SRC_VOCAB_SIZE {}, TGT_VOCAB_SIZE {}".format(src_vocab_size, tgt_vocab_size))
+print("Source vocab size {}, Target vocab size {}".format(src_vocab_size, tgt_vocab_size))
 
 # Create datasets
 train_dataloader, valid_dataloader, test_dataloader = dataloader.get_dataloader(corpus.tokenize_src,
@@ -102,10 +102,6 @@ criterion = nn.CrossEntropyLoss(ignore_index=dict.PAD_token)
 def train(model, iterator, optimizer, criterion, clip, epoch_num, label_smoothening=False):
 	model.train()
 	epoch_loss = 0
-	if label_smoothening:
-		print("using label smoothening")
-	else:
-		print("No label smoothening")
 	with tqdm(iterator, unit="batches") as tepoch:
 		for batch_num, batch in enumerate(iterator.batches):
 			tepoch.set_description(f"Epoch {epoch_num}")

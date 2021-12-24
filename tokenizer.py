@@ -21,13 +21,16 @@ class Corpus(object):
         self.dictionary_src = Dictionary()
         self.dictionary_tgt = Dictionary()
 
+        # Pre-process the data by removing all the duplicate sentences
+        removeDuplicateData()
+
         self.dictionary_src.add_all_words(src_data_path)
         self.dictionary_tgt.add_all_words(tgt_data_path)
 
-        self.tokenize_src = self.tokenize(src_data_path, self.dictionary_src, max_sent_len)
-        self.tokenize_tgt = self.tokenize(tgt_data_path, self.dictionary_tgt, max_sent_len)
+        self.tokenize_src = self.tokenize(src_data_path, self.dictionary_src)
+        self.tokenize_tgt = self.tokenize(tgt_data_path, self.dictionary_tgt)
 
-    def tokenize(self, path, dictionary, max_sent_len):
+    def tokenize(self, path, dictionary):
         with open(path, 'r', encoding="utf8") as f:
             idss = []
             for line in f:
