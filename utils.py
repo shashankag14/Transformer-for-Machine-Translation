@@ -13,8 +13,11 @@ def compute_time(start_time, end_time):
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Directories for local files
-orig_src_data_path = "data/PHP.cs-en.cs"
-orig_tgt_data_path = "data/PHP.cs-en.en"
+orig_src_data_path = "data/original_data/PHP.cs-en.cs"
+orig_tgt_data_path = "data/original_data/PHP.cs-en.en"
+
+no_dup_src_data_path = "data/no_duplicate_data/no_duplicate_src.txt"
+no_dup_tgt_data_path = "data/no_duplicate_data/no_duplicate_trg.txt"
 
 src_data_path = "data/preprocessed_src.txt"
 tgt_data_path = "data/preprocessed_trg.txt"
