@@ -48,7 +48,7 @@ parser.add_argument('--ffn_hidden', type=int, default=2048,
                     help='number of hidden units in FFN')
 parser.add_argument('--dropout', type=float, default=0.25,
                     help='dropout probability')
-parser.add_argument('--max_sent_len', type=int, default=10,
+parser.add_argument('--max_sent_len', type=int, default=20,
                     help='Maximum length of sentence to use for train/valid/test')
 
 # optimizer parameter setting
