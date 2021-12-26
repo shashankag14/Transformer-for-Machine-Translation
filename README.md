@@ -9,7 +9,7 @@ A PyTorch implementation of Transformers from scratch for Machine Translation on
 ## Getting Started : 
 
 ### Downloading
-1. Download the data using `scripts/download_data.sh`.  
+1. Download the data using [scripts/download_data.sh](scripts/download_data.sh).  
 Note: Extract `PHP.cs-en.cs` and `PHP.cs-en.en` files from the downloaded zip file and move them inside `data/`
 ```
 sh scripts/download_data.sh
@@ -36,12 +36,12 @@ python3 train.py [-h] [--src_data SRC_DATA] [--tgt_data TGT_DATA]
                 [--label_smooth_eps LABEL_SMOOTH_EPS]
 ```
 
-2. Run below code to plot Train/Valid Loss vs Epoch and save in `results/` (this step can be done anytime after executing step 1):
+2. Run below code to plot Train/Valid Loss vs Epoch and save in [results/](results/) (this step can be done anytime after executing step 1):
 ```
 python3 plot.py
 ```
 
-2. Use the saved checkpoints (`saved_ckpt/best_model.pt`) to test the model :
+2. Use the saved checkpoints ([saved_ckpt/best_model.pt](saved_ckpt/best_model.pt)) to test the model :
 ```
 python3 test.py
 ```
@@ -73,32 +73,36 @@ python3 test.py
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Model :
-### Transformer Architecture :
+### Transformer Architecture ([model/](model/)):
 <img src="https://user-images.githubusercontent.com/74488693/146267612-aa100838-d75f-48ec-b5d5-ce3755687cb5.png" height="700" width="500">
 
-### Multi Headed Attention Block in Encoder/Decoder:
+### Multi Headed Attention Block in Encoder/Decoder ([attention.py](model/attention.py)) :
 <img src="https://user-images.githubusercontent.com/74488693/144745249-5c99709d-0446-45fc-a4cb-f0428ead371e.png" height="300" width="600">
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Computing Attention using Key, Query and Value :
+### Computing Attention using Key, Query and Value ([attention.py](model/attention.py)) :
 <img src="https://user-images.githubusercontent.com/74488693/146843949-2ae064f2-49da-4c99-ac25-690a8b4fd910.png" height="600" width="500">
 <img src="https://user-images.githubusercontent.com/74488693/146268694-0c8517a1-5795-4efa-a51b-23bae6fab520.png" height="90" width="350">
 
-### Positional Embedding using sin/cos : 
+### Positional Embedding using sin/cos ([pos_embedding.py](model/pos_embedding.py)): 
 <img src="https://user-images.githubusercontent.com/74488693/146268889-723d15a5-2d18-48ba-85a9-936f72ce646f.png" height="90" width="340">
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Data :
+* Original data : 32983 sentences each in source and target
+* Data left after removing duplicate sentences : 5529
 * Dataset splitting (# of sentences in each dataset)
-    * Training : Validation : Test :: 25165 : 1391 : 1372
+    * Training : Validation : Test :: 4257 : 525 : 533
 * `src_vocab_size` : 9211
 * `trg_vocab_size` :  4849
 
 ## Regularization Techniques :
-As mentioned in the paper "Attention is All You Need" [2], I have used two types of regularization techniques :
+As mentioned in the paper "Attention is All You Need" [2], I have used two types of regularization techniques which are active *only* during the train phase :
 1. **Residual Dropout (dropout=0.4)** : Dropout has been added to embedding (positional+word) as well as to the output of each sublayer in Encoder and Decoder.
-2. **Label Smoothening (eps=0.1)** : Affected the training loss but improved the BLEU score.
+    * Note : In order to deativate Dropout during ```eval()```, I have used ```nn.Dropout()``` instead of ```nn.functional.dropout``` (Refer this [link](https://stackoverflow.com/questions/53419474/using-dropout-in-pytorch-nn-dropout-vs-f-dropout/53452827#53452827) for more info)
+    
+3. **Label Smoothening (eps=0.1)** : Affected the training loss but improved the BLEU score on test data.
 
 ## Space-Time Complexity (GPU used : Tesla K80)
 | Parameter    | Amount   |
