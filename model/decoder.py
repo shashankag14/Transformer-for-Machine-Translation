@@ -48,7 +48,7 @@ class TransformerDecoderLayer(nn.Module):
         self.norm3 = nn.LayerNorm(dim_model)
         self.dropout3 = nn.Dropout(dropout)
 
-    def forward(self, tgt: Tensor, memory: Tensor, src_mask, tgt_mask) -> Tensor:
+    def forward(self, tgt: Tensor, memory: Tensor, tgt_mask, src_mask) -> Tensor:
         # 1. Compute self attention
         attention_1 = self.attention1(tgt, tgt, tgt, tgt_mask)
         # 2. Add and norm
@@ -96,7 +96,7 @@ class TransformerDecoder(nn.Module):
         ])
         self.linear = nn.Linear(dim_model, tgt_vocab_size)
 
-    def forward(self, tgt: Tensor, memory: Tensor, src_mask, tgt_mask) -> Tensor:
+    def forward(self, tgt: Tensor, memory: Tensor, tgt_mask, src_mask) -> Tensor:
         seq_len = tgt.size(1)
 
         word_emb = self.word_embedding(tgt.to(torch.long))
@@ -104,7 +104,7 @@ class TransformerDecoder(nn.Module):
         tgt = self.embedding_dropout(pos_emb + word_emb)
 
         for layer in self.layers:
-            tgt = layer(tgt, memory, src_mask, tgt_mask)
+            tgt = layer(tgt, memory, tgt_mask, src_mask)
 
         # Softmax skipped : Using Cross entropy loss wherein softmax is already included
         return self.linear(tgt)

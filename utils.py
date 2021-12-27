@@ -13,11 +13,8 @@ def compute_time(start_time, end_time):
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Directories for local files
-orig_src_data_path = "data/original_data/PHP.cs-en.cs"
-orig_tgt_data_path = "data/original_data/PHP.cs-en.en"
-
-no_dup_src_data_path = "data/no_duplicate_data/no_duplicate_src.txt"
-no_dup_tgt_data_path = "data/no_duplicate_data/no_duplicate_trg.txt"
+orig_src_data_path = "data/PHP.cs-en.cs"
+orig_tgt_data_path = "data/PHP.cs-en.en"
 
 src_data_path = "data/preprocessed_src.txt"
 tgt_data_path = "data/preprocessed_trg.txt"
@@ -51,7 +48,7 @@ parser.add_argument('--ffn_hidden', type=int, default=2048,
                     help='number of hidden units in FFN')
 parser.add_argument('--dropout', type=float, default=0.25,
                     help='dropout probability')
-parser.add_argument('--max_sent_len', type=int, default=20,
+parser.add_argument('--max_sent_len', type=int, default=30,
                     help='Maximum length of sentence to use for train/valid/test')
 
 # optimizer parameter setting
@@ -63,12 +60,12 @@ parser.add_argument('--optim_adam_eps', type=float, default=5e-9,
                     help='Adam epsilon')
 parser.add_argument('--optim_patience', type=int, default=8,
                     help='Number of epochs optimizer will wait before decreasing LR')
-parser.add_argument('--optim_warmup', type=int, default=4000,
+parser.add_argument('--optim_warmup', type=int, default=16000,
                     help='Optimizer warmup')
 parser.add_argument('--optim_weight_decay', type=int, default=5e-4,
                     help='Weight decay factor for optimizer')
 
-parser.add_argument('--epoch', type=int, default=50,
+parser.add_argument('--epoch', type=int, default=150,
                     help='Number of epochs to train')
 parser.add_argument('--clip', type=float, default=1.0,
                     help='Gradient clipping')
@@ -98,4 +95,5 @@ epoch = args.epoch
 clip = args.clip
 weight_decay = args.optim_weight_decay
 label_smooth_eps = args.label_smooth_eps
+lr_mul = 2
 inf = float('inf')

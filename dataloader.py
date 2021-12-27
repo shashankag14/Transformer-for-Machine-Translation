@@ -19,8 +19,9 @@ class CustomDataset(object):
         self.src_data = []
         self.tgt_data = []
         for src,tgt in data:
-            self.src_data.append(src)
-            self.tgt_data.append(tgt)
+            if (len(src)<utils.max_sent_len) or (len(tgt)<utils.max_sent_len):
+                self.src_data.append(src)
+                self.tgt_data.append(tgt)
         self.num_examples = len(self.src_data)
 
     def __len__(self):
@@ -35,9 +36,9 @@ class CustomDataset(object):
 def get_dataloader(src_tokens, tgt_tokens) :
 
     # 1. Split the SRC and TGT tokens into train, valid and test sets
-    train_src, remain_src = train_test_split(src_tokens, test_size=0.1,
+    train_src, remain_src = train_test_split(src_tokens, test_size=0.4,
                                              random_state=27)
-    train_tgt, remain_tgt = train_test_split(tgt_tokens, test_size=0.1,
+    train_tgt, remain_tgt = train_test_split(tgt_tokens, test_size=0.4,
                                              random_state=27)
 
     valid_src, test_src = train_test_split(remain_src, test_size=0.5,

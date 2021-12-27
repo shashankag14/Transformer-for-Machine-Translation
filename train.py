@@ -21,6 +21,8 @@ import dictionary as dict
 import tokenizer
 import dataloader
 from bleu_metric import *
+from optim import ScheduledOptim
+
 
 # Ignore warnings
 import warnings
@@ -82,17 +84,21 @@ model.apply(initialize_weights)
 ## Loss function & Optimizer 
 ################################################################################
 # Optimizer
-optimizer = Adam(params=model.parameters(),
-                 lr=init_lr,
-                 weight_decay=weight_decay,
-                 eps=adam_eps)
+# optimizer = Adam(params=model.parameters(),
+#                  lr=init_lr,
+#                  weight_decay=weight_decay,
+#                  eps=adam_eps)
 
-# LR Scheduler for better gradient descent 
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer,
-                                                 verbose=True,
-                                                 factor=factor,
-                                                 patience=patience)
+# # LR Scheduler for better gradient descent 
+# scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer,
+#                                                  verbose=True,
+#                                                  factor=factor,
+#                                                  patience=patience)
 
+optimizer = ScheduledOptim(optim.Adam(params=model.parameters(),
+							betas=(0.9, 0.98),
+	                        eps=adam_eps),
+							lr_mul, d_model, warmup)
 # Loss function (Cross entropy)
 criterion = nn.CrossEntropyLoss(ignore_index=dict.PAD_token)
 
@@ -150,8 +156,8 @@ def train(model, iterator, optimizer, criterion, clip, epoch_num, label_smoothen
 
 			# Clip gradients to avoid exploding gradient issues
 			torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
-			optimizer.step()
-
+			# optimizer.step()
+			optimizer.step_and_update_lr()
 			epoch_loss += loss.item()
 			tepoch.update()
 			tepoch.set_postfix(loss=loss.item())
@@ -194,12 +200,13 @@ def evaluate(model, iterator, criterion):
 			batch_bleu.append(total_bleu)
 
 	batch_bleu = sum(batch_bleu) / len(batch_bleu)
+	torch.cuda.empty_cache()
 	return epoch_loss / len(iterator), batch_bleu
 
 ################################################################################
 ## Run epochs - train and validation in each epoch
 ################################################################################
-def run(total_epoch, best_loss):
+def run(total_epoch, best_loss, best_epoch):
 	train_losses, test_losses, bleus = [], [], []
 	for step in range(total_epoch):
 		start_time = time.time()
@@ -213,8 +220,8 @@ def run(total_epoch, best_loss):
 
 		end_time = time.time()
 
-		if step > warmup:
-			scheduler.step(valid_loss)
+		# if step > warmup:
+		# 	scheduler.step(valid_loss)
 
 		train_losses.append(train_loss)
 		test_losses.append(valid_loss)
@@ -224,6 +231,7 @@ def run(total_epoch, best_loss):
 		if valid_loss < best_loss:
 			best_loss = valid_loss
 			torch.save(model.state_dict(), 'saved_chkpt/best_model.pt')
+			best_epoch = step
 
 		f = open('results/train_loss.txt', 'w')
 		f.write(str(train_losses))
@@ -241,7 +249,7 @@ def run(total_epoch, best_loss):
 		print(f'\tTrain Loss: {train_loss:.3f}')
 		print(f'\tValid Loss: {valid_loss:.3f}')
 		print(f'\tBLEU Score: {bleu:.3f}')
-
+		print(f'\tBest epoch: {best_epoch+1}')
 
 if __name__ == '__main__':
-	run(total_epoch=epoch, best_loss=inf)
+	run(total_epoch=epoch, best_loss=inf, best_epoch = 0)

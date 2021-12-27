@@ -9,8 +9,6 @@ from io import open
 from utils import *
 from dictionary import *
 
-import data_preproc
-
 # ########################################################################
 # # CORPUS CLASS
 # 1. Creates SRC/TGT dictionary
@@ -23,9 +21,8 @@ class Corpus(object):
         self.dictionary_src = Dictionary()
         self.dictionary_tgt = Dictionary()
 
-        # Pre-process the data by removing all the duplicate and long sentences
-        # data_preproc.removeDuplicateData() # called only once
-        data_preproc.removeLongSent()
+        # Pre-process the data by removing all the duplicate sentences
+        # removeDuplicateData()
 
         self.dictionary_src.add_all_words(src_data_path)
         self.dictionary_tgt.add_all_words(tgt_data_path)
@@ -37,7 +34,7 @@ class Corpus(object):
         with open(path, 'r', encoding="utf8") as f:
             idss = []
             for line in f:
-                normalised_line = data_preproc.normalizeString(line)
+                normalised_line = normalizeString(line)
                 words = normalised_line.split()
 
                 ids = [SOS_token]
@@ -51,13 +48,11 @@ class Corpus(object):
         with open(path, 'r', encoding="utf8") as f:
             max_sent_len = 0
             for line in f:
-                normalised_line = data_preproc.normalizeString(line)
+                normalised_line = normalizeString(line)
                 words = normalised_line.split()
                 if len(words) > max_sent_len:
                     max_sent_len = len(words)
                     max_sent = line
-        # print("Maximum length sentence : {}".format(max_sent))
-        # print("Maximum length : {}".format(max_sent_len))
         return max_sent_len
 
 # ########################################################################
