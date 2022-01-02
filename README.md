@@ -1,7 +1,7 @@
 <div id="top"></div>
 
 # Transformer-for-Machine-Translation
-A PyTorch implementation of Transformers from scratch for Machine Translation on PHP Corpus dataset[1] (Czech->English) based on "Attention Is All You Need" by Ashish Vaswani et. al.[2]
+A PyTorch implementation of Transformers from scratch for Machine Translation on PHP Corpus dataset[1] (Czech->English) based on "Attention Is All You Need" by Ashish Vaswani et. al.[2]. The motive to create this repository is not to implement a state-of-the-art model for Machine Translation, but to get a hands-on experience in implementing the Transformer architecture from scratch. 
 
 ![image](https://user-images.githubusercontent.com/74488693/146843786-d2b240cc-8aca-402d-9165-28ca8a5405b9.png)
 
@@ -107,23 +107,22 @@ As mentioned in the paper "Attention is All You Need" [2], I have used two types
 ## Space-Time Complexity (GPU used : Tesla K80) *(Might have been changed, need to update)*
 | Parameter    | Amount   |
 |-------------|-------------|
-| Number of trainable parameters | 39,865,969 | 
-| Time per Epoch | 4m 30s  |
+| Number of trainable parameters | 29,689,215 | 
+| Time per Epoch | 20s  |
 
 
 ## Results
 | Parameter    | Value   |
 |-------------|-------------|
-| Minimum train loss | 5.22 |
-| Minimum Validation loss | 5.28 |
-| BLEU Score (on Test data) | 5.41  |
+| Minimum train loss | 4.05 |
+| Minimum Validation loss | 4.85 |
+| BLEU Score (on Test data) | 6.25  |
 
 <img src="results/training_plot.png" height="350" width="420">
-Model checkpoints can be downlaoded from : https://drive.google.com/drive/folders/1DbdzSB4ioixfj-yXnaiZ0Bs61kpjzcc7?usp=sharing
 
-*Need to check why validation loss is lower than training loss. (Might be due to regularization techniques - dropout and label smoothening)*
+* Model checkpoints can be downlaoded from : https://drive.google.com/drive/folders/1DbdzSB4ioixfj-yXnaiZ0Bs61kpjzcc7?usp=sharing (Might have been changed, need to update)
 
-[results/random_machine_translations.txt](results/random_machine_translations.txt) : Some random machine translated sentences from test dataset have been generated using the saved checkpoint.
+* [results/random_machine_translations.txt](results/random_machine_translations.txt) : Some random machine translated sentences from test dataset have been generated using the saved checkpoint.
 
 ## Additional Comment 
 Due to limited availibilty of GPU resources, I could only train the model for very less training data due to which the results are not satisfactory. However, I tried to get the learning curve and BLEU score as good as possible. [Refer](https://arxiv.org/pdf/2105.13065.pdf) for information about how MT performs on low resources
