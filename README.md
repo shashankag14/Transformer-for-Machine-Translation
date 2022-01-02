@@ -84,7 +84,7 @@ python3 test.py
 <img src="https://user-images.githubusercontent.com/74488693/146843949-2ae064f2-49da-4c99-ac25-690a8b4fd910.png" height="600" width="500">
 <img src="https://user-images.githubusercontent.com/74488693/146268694-0c8517a1-5795-4efa-a51b-23bae6fab520.png" height="90" width="350">
 
-### Positional Embedding using sin/cos ([pos_embedding.py](model/pos_embedding.py)): 
+### Positional Encoding using sin/cos ([position_encoding.py](model/position_encoding.py)): 
 <img src="https://user-images.githubusercontent.com/74488693/146268889-723d15a5-2d18-48ba-85a9-936f72ce646f.png" height="90" width="340">
 
 <p align="right">(<a href="#top">back to top</a>)</p>
