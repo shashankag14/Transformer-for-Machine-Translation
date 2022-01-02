@@ -73,6 +73,8 @@ parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 parser.add_argument('--label_smooth_eps', type=float, default=0.1,
                     help='Hyper-parameter for label smoothening')
+parser.add_argument('--early_stop_patience', type=int, default=20,
+                    help='Patience for Early Stopping')
 
 args = parser.parse_args()
 
@@ -96,4 +98,5 @@ clip = args.clip
 weight_decay = args.optim_weight_decay
 label_smooth_eps = args.label_smooth_eps
 lr_mul = 2
+early_stop_patience = args.early_stop_patience
 inf = float('inf')

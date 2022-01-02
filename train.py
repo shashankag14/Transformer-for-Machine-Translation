@@ -208,6 +208,7 @@ def evaluate(model, iterator, criterion):
 ################################################################################
 def run(total_epoch, best_loss, best_epoch):
 	train_losses, test_losses, bleus = [], [], []
+	early_stop_counter = 0
 	for step in range(total_epoch):
 		start_time = time.time()
 
@@ -228,10 +229,12 @@ def run(total_epoch, best_loss, best_epoch):
 		bleus.append(bleu)
 		epoch_mins, epoch_secs = compute_time(start_time, end_time)
 
-		if valid_loss < best_loss:
+		if valid_loss <= best_loss:
 			best_loss = valid_loss
 			torch.save(model.state_dict(), 'saved_chkpt/best_model.pt')
 			best_epoch = step
+		else:
+			early_stop_counter+=1
 
 		f = open('results/train_loss.txt', 'w')
 		f.write(str(train_losses))
@@ -250,6 +253,10 @@ def run(total_epoch, best_loss, best_epoch):
 		print(f'\tValid Loss: {valid_loss:.3f}')
 		print(f'\tBLEU Score: {bleu:.3f}')
 		print(f'\tBest epoch: {best_epoch+1}')
+
+		if early_stop_counter == utils.early_stop_patience :
+			print("Early stopping !")
+			break
 
 if __name__ == '__main__':
 	run(total_epoch=epoch, best_loss=inf, best_epoch = 0)
