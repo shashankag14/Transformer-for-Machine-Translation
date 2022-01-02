@@ -8,7 +8,7 @@ import torch
 from torch import Tensor
 from torch import nn
 
-from model.position_embedding import PositionEmbedding
+from model.position_encoding import PositionEmbedding
 from model.attention import MultiHeadAttention
 
 # ########################################################################

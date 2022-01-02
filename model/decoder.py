@@ -9,7 +9,7 @@ from torch import Tensor
 from torch import nn
 import torch.nn.functional as F
 
-from model.position_embedding import PositionEmbedding
+from model.position_encoding import PositionEmbedding
 from model.attention import MultiHeadAttention
 
 # ########################################################################
