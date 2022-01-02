@@ -40,13 +40,13 @@ parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                     help='batch size')
 parser.add_argument('--d_model', type=int, default=512,
                     help='size of word embeddings')
-parser.add_argument('--n_layers', type=int, default=6,
+parser.add_argument('--n_layers', type=int, default=4,
                     help='number of enc/dec layers in each block')
 parser.add_argument('--n_heads', type=int, default=8,
                     help='number of en/dec blocks')
 parser.add_argument('--ffn_hidden', type=int, default=2048,
                     help='number of hidden units in FFN')
-parser.add_argument('--dropout', type=float, default=0.25,
+parser.add_argument('--dropout', type=float, default=0.1,
                     help='dropout probability')
 parser.add_argument('--max_sent_len', type=int, default=30,
                     help='Maximum length of sentence to use for train/valid/test')
