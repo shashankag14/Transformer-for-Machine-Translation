@@ -8,7 +8,7 @@ import torch
 from torch import Tensor
 from torch import nn
 
-from model.position_encoding import PositionEmbedding
+from model.position_encoding import PositionEncoding
 from model.attention import MultiHeadAttention
 
 # ########################################################################
@@ -83,7 +83,7 @@ class TransformerEncoder(nn.Module):
         self.dim_model = dim_model
 
         self.word_embedding = nn.Embedding(src_vocab_size, self.dim_model)
-        self.position_embedding = PositionEmbedding()
+        self.position_encoding = PositionEncoding()
         self.embedding_dropout = nn.Dropout(dropout)
 
         self.layers = nn.ModuleList([
@@ -94,7 +94,7 @@ class TransformerEncoder(nn.Module):
     def forward(self, src: Tensor, mask) -> Tensor:
         seq_len = src.size(1)
 
-        pos_emb = self.position_embedding(seq_len, self.dim_model, self.device)
+        pos_emb = self.position_encoding(seq_len, self.dim_model, self.device)
         word_emb = self.word_embedding(src.to(torch.long))
         src = self.embedding_dropout(pos_emb + word_emb)
 

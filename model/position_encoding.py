@@ -5,9 +5,9 @@ from torch import nn
 # # POS EMBEDDING - Using sin/cos
 # Input : Sentence length, Word embedding size, Device (CPU/GPU?)
 # ########################################################################
-class PositionEmbedding(nn.Module):
+class PositionEncoding(nn.Module):
 	def __init__(self):
-		super(PositionEmbedding, self).__init__()
+		super(PositionEncoding, self).__init__()
 
 	def forward(self, seq_len: int, dim_model: int, device: torch.device = torch.device("cpu")):
 		pos = torch.arange(seq_len, dtype=torch.float, device=device).reshape(1, -1, 1)
