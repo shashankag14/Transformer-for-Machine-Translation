@@ -3,6 +3,11 @@
 # Transformer-for-Machine-Translation
 A PyTorch implementation of Transformers from scratch for Machine Translation on PHP Corpus dataset[1] (Czech->English) based on "Attention Is All You Need" by Ashish Vaswani et. al.[2]. The motive to create this repository is not to implement a state-of-the-art model for Machine Translation, but to get a hands-on experience in implementing the Transformer architecture from scratch. 
 
+_**Modification done over the baseline[2] :**_
+- _Reduced the model depth and improving the BLEU score by a margin of **0.84** (Check Ablation Study for more details)._
+- _Other minor modifications include using Early Stopping as an additional regularization technique, gradient clipping to avoid gradient explosion, maximum size of sentences to train, and played around with the hyperparameter values._
+
+
 ![image](https://user-images.githubusercontent.com/74488693/146843786-d2b240cc-8aca-402d-9165-28ca8a5405b9.png)
 
 
@@ -34,9 +39,10 @@ python3 train.py [-h] [--src_data SRC_DATA] [--tgt_data TGT_DATA]
                 [--optim_weight_decay OPTIM_WEIGHT_DECAY] [--epoch EPOCH]
                 [--clip CLIP] [--seed SEED] 
                 [--label_smooth_eps LABEL_SMOOTH_EPS]
+                [--early_stop_patience EARLY_STOP_PATIENCE]
 ```
 
-2. Run below code to plot Train/Valid Loss vs Epoch and save in [results/](results/) (this step can be done anytime after executing step 1):
+2. Run below code to plot Train/Valid Loss vs Epoch and save in [results/](results/) (This step can be done anytime after executing step 1 to see the progress of the graph):
 ```
 python3 plot.py
 ```
@@ -48,27 +54,28 @@ python3 test.py
 
 ### Arguments for train.py
 
-| Parameters | Description | Value used | Value (in the paper) |
+| Parameters | Description | Value used in modified version | Value (in the paper) |
 | --- | --- | --- | --- |
-| `--src_data` | Location of the source data | | |
-| `--tgt_data` | Location of the target data | | |
+| `--src_data` | Location of the source data | -path- | -path- |
+| `--tgt_data` | Location of the target data | -path- | -path- |
 | `--epoch` | Number of epochs to train | 40 | N/A |
 | `--batch_size` | Batch size | 32 | N\A |
 | `--d_model` | Size of word embedding | 512 | 512 |
-| `--n_layers` | Number of enc/dec layers | 6 | 6 |
+| `--n_layers` | _**Number of enc/dec layers**_ | _**4**_ | _**6**_ |
 | `--n_heads` | Number of attention heads | 8 | 8 |
 | `--ffn_hidden` | Number of hidden units in FFN | 2048 | 2048 |
-| `--dropout` | Dropout probability | 0.25 | 0.1 |
-| `--max_sent_len` | Maximum length of sentence for train/valid/test | 10 | N/A |
+| `--dropout` | Dropout probability | 0.1 | 0.1 |
+| `--max_sent_len` | _**Maximum length of sentence for train/valid/test**_ | _**30**_ | _**N/A**_ |
 | `--init_lr` | Initial Learning Rate | 5e-5 | N/A |
 | `--scheduler_factor` | Factor with which LR will decreasing using scheduler | 0.9 | 0.9 |
-| `--optim_adam_eps` | Adam epsilon | 5e-9 | 1e-9 |
+| `--optim_adam_eps` | _**Adam epsilon** | **5e-9** | **1e-9**_ |
 | `--optim_patience` | Number of epochs optimizer waits before decreasing LR | 8 | N/A |
-| `--optim_warmup` | Optimizer warmup | 4000 | 4000 |
+| `--optim_warmup` | Optimizer warmup | **16000** | 4000 |
 | `--optim_weight_decay` | Weight decay factor for optimizer | 5e-4 | N/A |
-| `--clip` | Gradient clipping threshold to prevent exploding gradients | 1.0 | N/A |
+| `--clip` | _**Gradient clipping threshold to prevent exploding gradients** | **1.0** | **N/A**_ |
 | `--seed` | Seed for reproducibility | 1111 | N/A |
 | `--label_smooth_eps` | Hyper-parameter for label smoothening | 0.1 | 0.1 |
+| `--early_stop_patience` | _**Patience for Early Stopping** | **20** | **0.1** _|
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -91,38 +98,44 @@ python3 test.py
 
 ## Data :
 * Original data : 32983 sentences each in source and target
-* Data left after removing duplicate sentences : 5529
+* After removing duplicate sentences (from Source): 5529 sentences each in source and target
 * Dataset splitting (# of sentences in each dataset)
-    * Training : Validation : Test :: 4257 : 525 : 533
+    * >Training : Validation : Test :: 4257 : 525 : 533
 * >src_vocab_size : 9211
 * >trg_vocab_size :  4735
 
 ## Regularization Techniques :
 As mentioned in the paper "Attention is All You Need" [2], I have used two types of regularization techniques which are active *only* during the train phase :
-1. **Residual Dropout (dropout=0.4)** : Dropout has been added to embedding (positional+word) as well as to the output of each sublayer in Encoder and Decoder.
+1. **Residual Dropout (dropout=0.1)** : Dropout has been added to embedding (positional+word) as well as to the output of each sublayer in Encoder and Decoder.
     * Note : In order to deativate Dropout during ```eval()```, I have used ```nn.Dropout()``` instead of ```nn.functional.dropout``` (Refer this [link](https://stackoverflow.com/questions/53419474/using-dropout-in-pytorch-nn-dropout-vs-f-dropout/53452827#53452827) for more info)
+    * I tried increasing the dropout parameter, however didn't see any considerable improvement.
     
 3. **Label Smoothening (eps=0.1)** : Affected the training loss but improved the BLEU score on test data.
+4. **Early Stopping (early_stop_patience=20)** : To stop the training before the model starts to overfit. (This is just an additional technique used which has not been presented in the paper)
 
-## Space-Time Complexity (GPU used : Tesla K80) *(Might have been changed, need to update)*
-| Parameter    | Amount   |
-|-------------|-------------|
-| Number of trainable parameters | 29,689,215 | 
-| Time per Epoch | 20s  |
+## Ablation Study
+### 1. Comparison of Results
+| Parameter    | Results from my model  | Results from baseline model |
+|-------------|-------------|-------------|
+| Minimum train loss | _**4.05**_ | 5.22 |
+| Minimum Validation loss | _**4.85**_ | 5.28 |
+| BLEU Score (on Test data) | _**6.25**_  | 5.41 |
 
+* [results/random_machine_translations.txt](results/random_machine_translations.txt) : Some random machine translated sentences from test dataset have been generated using the saved checkpoint from my model.
 
-## Results
-| Parameter    | Value   |
-|-------------|-------------|
-| Minimum train loss | 4.05 |
-| Minimum Validation loss | 4.85 |
-| BLEU Score (on Test data) | 6.25  |
+### 2. Comparison of Learning Graphs
+<img src="https://user-images.githubusercontent.com/74488693/148826900-5cc6ba25-0f00-45c7-86b2-ef7a00b77b05.png" height="350" width="840">
 
-<img src="results/training_plot.png" height="350" width="420">
+### 3. Comparison of Space-Time Complexity (GPU used : Tesla K80) 
+| Parameter    | From my model   | From baseline model |
+|-------------|-------------|-------------|
+| Number of trainable parameters | 29,689,215 | 39,865,969 |
+| Time per Epoch | 40s  | 2m 30s |
 
-* Model checkpoints can be downlaoded from : https://drive.google.com/drive/folders/1DbdzSB4ioixfj-yXnaiZ0Bs61kpjzcc7?usp=sharing (Might have been changed, need to update)
+## Conclusion
+As seen from the ablation study, my modified model (with reduced number of encoder/decoder layers) works particularily well on PHP Corpus dataset in terms of BLEU score, Train/Validation Loss as well as space time complexity. This might be due to the fact that there are less number of unique sentences in the dataset to train, hence shallow network performs better than deep networks. 
 
-* [results/random_machine_translations.txt](results/random_machine_translations.txt) : Some random machine translated sentences from test dataset have been generated using the saved checkpoint.
+Future direction could be to try features like Relative Position Encoding, Syntax Aware NMT (might work particularily well as the data is small), Coverage based NMT or Beam Search.
 
 ## Additional Comment 
 Due to limited availibilty of GPU resources, I could only train the model for very less training data due to which the results are not satisfactory. However, I tried to get the learning curve and BLEU score as good as possible. [Refer](https://arxiv.org/pdf/2105.13065.pdf) for information about how MT performs on low resources
