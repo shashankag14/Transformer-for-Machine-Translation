@@ -70,12 +70,12 @@ python3 test.py
 | `--scheduler_factor` | Factor with which LR will decreasing using scheduler | 0.9 | 0.9 |
 | `--optim_adam_eps` | _**Adam epsilon** | **5e-9** | **1e-9**_ |
 | `--optim_patience` | Number of epochs optimizer waits before decreasing LR | 8 | N/A |
-| `--optim_warmup` | Optimizer warmup | **16000** | 4000 |
+| `--optim_warmup` | _**Optimizer warmup | 16000 | 4000 |**_
 | `--optim_weight_decay` | Weight decay factor for optimizer | 5e-4 | N/A |
 | `--clip` | _**Gradient clipping threshold to prevent exploding gradients** | **1.0** | **N/A**_ |
 | `--seed` | Seed for reproducibility | 1111 | N/A |
 | `--label_smooth_eps` | Hyper-parameter for label smoothening | 0.1 | 0.1 |
-| `--early_stop_patience` | _**Patience for Early Stopping** | **20** | **0.1** _|
+| `--early_stop_patience` | _**Patience for Early Stopping** | **20** | N/A _|
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -97,10 +97,10 @@ python3 test.py
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Data :
-* Original data : 32983 sentences each in source and target
-* After removing duplicate sentences (from Source): 5529 sentences each in source and target
+* Original data : ~33k sentences each in source and target
+* After removing duplicate sentences and keeping maximum length of 30 (Source data as reference) : 5226 sentences each in source and target
 * Dataset splitting (# of sentences in each dataset)
-    * >Training : Validation : Test :: 4257 : 525 : 533
+    * >Training : Validation : Test :: 3131 : 1047 : 1048
 * >src_vocab_size : 9211
 * >trg_vocab_size :  4735
 
@@ -129,8 +129,8 @@ As mentioned in the paper "Attention is All You Need" [2], I have used two types
 ### 3. Comparison of Space-Time Complexity (GPU used : Tesla K80) 
 | Parameter    | From my model   | From baseline model |
 |-------------|-------------|-------------|
-| Number of trainable parameters | 29,689,215 | 39,865,969 |
-| Time per Epoch | 40s  | 2m 30s |
+| Number of trainable parameters | 29,689,215 | 39,749,119 |
+| Time per Epoch | 14s  | 18s |
 
 ## Conclusion
 As seen from the ablation study, my modified model (with reduced number of encoder/decoder layers) works particularily well on PHP Corpus dataset in terms of BLEU score, Train/Validation Loss as well as space time complexity. This might be due to the fact that there are less number of unique sentences in the dataset to train, hence shallow network performs better than deep networks. 
