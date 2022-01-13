@@ -37,14 +37,14 @@ def get_dataloader(src_tokens, tgt_tokens) :
 
     # 1. Split the SRC and TGT tokens into train, valid and test sets
     train_src, remain_src = train_test_split(src_tokens, test_size=0.4,
-                                             random_state=27)
+                                             random_state=utils.args.seed)
     train_tgt, remain_tgt = train_test_split(tgt_tokens, test_size=0.4,
-                                             random_state=27)
+                                             random_state=utils.args.seed)
 
     valid_src, test_src = train_test_split(remain_src, test_size=0.5,
-                                           random_state=27)
+                                           random_state=utils.args.seed)
     valid_tgt, test_tgt = train_test_split(remain_tgt, test_size=0.5,
-                                           random_state=27)
+                                           random_state=utils.args.seed)
 
     # 2. Create lists of tran/valid/test source-target tuples
     train_data = list(zip(train_src, train_tgt))

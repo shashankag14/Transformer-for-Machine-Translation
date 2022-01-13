@@ -21,9 +21,6 @@ class Corpus(object):
         self.dictionary_src = Dictionary()
         self.dictionary_tgt = Dictionary()
 
-        # Pre-process the data by removing all the duplicate sentences
-        # removeDuplicateData()
-
         self.dictionary_src.add_all_words(src_data_path)
         self.dictionary_tgt.add_all_words(tgt_data_path)
 
