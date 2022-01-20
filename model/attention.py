@@ -39,25 +39,25 @@ class MultiHeadAttention(nn.Module):
 	def __init__(self, num_heads: int, dim_in: int, dim_k: int, dim_v: int):
 		super().__init__()
 		self.scaled_dot_prod_attn = ScaledDotProductAttn()
-		self.q = nn.Linear(dim_k, dim_k)
-		self.k = nn.Linear(dim_k, dim_k)
-		self.v = nn.Linear(dim_v, dim_v)
+		self.q = nn.Linear(dim_in, dim_in)
+		self.v = nn.Linear(dim_in, dim_in)
+		self.k = nn.Linear(dim_in, dim_in)
 		self.num_heads = num_heads
 		self.head_dim = dim_in // num_heads
-		self.linear = nn.Linear(num_heads * dim_v, dim_in)
+		self.linear = nn.Linear(dim_in, dim_in)
 
 	def forward(self, query: Tensor, key: Tensor, value: Tensor, mask) -> Tensor:
 		N = query.shape[0]
 		query_len, key_len, value_len = query.shape[1], key.shape[1], value.shape[1]
 
+		query = self.q(query)
+		key = self.k(key)
+		value = self.v(value)
+
 		# Shape of x -> (N, x_len, heads, num_heads)
 		query = query.reshape(N, query_len, self.num_heads, self.head_dim)
 		key = key.reshape(N, key_len, self.num_heads, self.head_dim)
 		value = value.reshape(N, value_len, self.num_heads, self.head_dim)
-
-		query = self.q(query)
-		key = self.k(key)
-		value = self.v(value)
 
 		attention = self.scaled_dot_prod_attn(query, key, value, mask, self.num_heads, self.head_dim)
 		out = self.linear(attention)
