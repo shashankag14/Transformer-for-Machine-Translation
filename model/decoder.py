@@ -55,7 +55,7 @@ class TransformerDecoderLayer(nn.Module):
         query = self.dropout1(self.norm1(attention_1 + tgt))
 
         # 3. Encoder-decoder self attention
-        attention_2 = self.attention2(memory, memory, query, src_mask)
+        attention_2 = self.attention2(query, memory, memory, src_mask)
         # 4. Add and norm
         x = self.dropout2(self.norm2(attention_2 + query))
 
