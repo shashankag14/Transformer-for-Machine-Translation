@@ -49,7 +49,7 @@ def test_model(dataloader):
         for i, batch in enumerate(dataloader.batches):
             src, trg = tokenizer.add_padding(batch)
             src, trg = src.to(device), trg.to(device)
-            output = model(src, trg)
+            output = model(src, trg[:,:-1])
 
             total_bleu = []
             # Print machine translated sentences

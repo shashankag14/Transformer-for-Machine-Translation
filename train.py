@@ -114,13 +114,12 @@ def train(model, iterator, optimizer, criterion, clip, epoch_num, label_smoothen
 
 			src, trg = tokenizer.add_padding(batch)
 			src, trg = src.to(device), trg.to(device)
-
 			optimizer.zero_grad()
 			# output -> (N, seq_len, tgt_vocab_size) ; # trg -> (N, seq_len)
-			output = model(src, trg) 
+			output = model(src, trg[:,:-1])
 
 			# removing the first token of <SOS> and then flattening 2D to 1D tensor
-			output_reshape = output[:, 1:].contiguous().view(-1, output.shape[-1])
+			output_reshape = output.contiguous().view(-1, output.shape[-1])
 			trg = trg[:, 1:].contiguous().view(-1)
 
 			##########################################################################
@@ -138,14 +137,14 @@ def train(model, iterator, optimizer, criterion, clip, epoch_num, label_smoothen
 				# 1D tensor : (N*seq_len)-> Compute smoothed cross-entropy loss
 				loss = (-1 * target_vector * F.log_softmax(output_reshape, dim=1)).sum(dim=1)
 				# Create mask for locations of <PAD token in target (N*seq_len)
-				non_pad_mask = trg.ne(dict.PAD_token) 
+				non_pad_mask = trg.ne(dict.PAD_token)
 
-				# Ignore <PAD> while avging loss, thus this 1D tensor might be smaller 
+				# Ignore <PAD> while avging loss, thus this 1D tensor might be smaller
 				# than the previous 1D loss tensor
-				loss = loss.masked_select(non_pad_mask) 
+				loss = loss.masked_select(non_pad_mask)
 				# Final avg batch loss : Sum the non pad mask losses and divide by
 				# number of non pad masks
-				loss = loss.sum()/loss.size(0) 
+				loss = loss.sum()/loss.size(0)
 
 			else :
 				# flattening 2D to 1D tensor
@@ -179,15 +178,15 @@ def evaluate(model, iterator, criterion):
 			src, trg = tokenizer.add_padding(batch)
 			src, trg = src.to(device), trg.to(device)
 
-			output = model(src, trg)
-			output_reshape = output[:,1:].contiguous().view(-1, output.shape[-1])
+			output = model(src, trg[:,:-1])
+			output_reshape = output.contiguous().view(-1, output.shape[-1])
 			trg_reshape = trg[:, 1:].contiguous().view(-1)
 
 			loss = criterion(output_reshape, trg_reshape)
 			epoch_loss += loss.item()
-      
+
             # Compute BLEU score per batch - corpus level or sentence level??
-			total_bleu = [] 
+			total_bleu = []
 			# Note : Size of last batch might not be equal to batch_size, thus trg.size(dim=0)
 			for j in range(trg.size(dim=0)):
 				trg_words = tokenizer.detokenize(trg[j].tolist(), corpus.dictionary_tgt)
@@ -195,7 +194,7 @@ def evaluate(model, iterator, criterion):
 				output_words = tokenizer.detokenize(output_words.tolist(), corpus.dictionary_tgt)
 				bleu = get_bleu(hypotheses=output_words.split(), reference=trg_words.split())
 				total_bleu.append(bleu)
-				     
+
 			total_bleu = sum(total_bleu) / len(total_bleu)
 			batch_bleu.append(total_bleu)
 
@@ -208,13 +207,13 @@ def evaluate(model, iterator, criterion):
 ################################################################################
 def run(total_epoch, best_loss, best_epoch):
 	train_losses, test_losses, bleus = [], [], []
-	early_stop_counter = 0
+	# early_stop_counter = 0
 	for step in range(total_epoch):
 		start_time = time.time()
 
 		# Create batches - needs to be called before each loop.
 		train_dataloader.create_batches()
-		train_loss = train(model, train_dataloader, optimizer, criterion, clip, step, label_smoothening = True)
+		train_loss = train(model, train_dataloader, optimizer, criterion, clip, step, label_smoothening = False)
 
 		valid_dataloader.create_batches()
 		valid_loss, bleu = evaluate(model, valid_dataloader, criterion)
@@ -233,8 +232,8 @@ def run(total_epoch, best_loss, best_epoch):
 			best_loss = valid_loss
 			torch.save(model.state_dict(), 'saved_chkpt/best_model.pt')
 			best_epoch = step
-		else:
-			early_stop_counter+=1
+		# else:
+		# 	early_stop_counter+=1
 
 		f = open('results/train_loss.txt', 'w')
 		f.write(str(train_losses))
@@ -254,9 +253,9 @@ def run(total_epoch, best_loss, best_epoch):
 		print(f'\tBLEU Score: {bleu:.3f}')
 		print(f'\tBest epoch: {best_epoch+1}')
 
-		if early_stop_counter == utils.early_stop_patience :
-			print("Early stopping !")
-			break
+		# if early_stop_counter == utils.early_stop_patience :
+		# 	print("Early stopping !")
+		# 	break
 
 if __name__ == '__main__':
 	run(total_epoch=epoch, best_loss=inf, best_epoch = 0)
