@@ -16,8 +16,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 orig_src_data_path = "data/PHP.cs-en.cs"
 orig_tgt_data_path = "data/PHP.cs-en.en"
 
-src_data_path = "data/preprocessed_src.txt"
-tgt_data_path = "data/preprocessed_trg.txt"
+tgt_data_path = "data/preprocessed_src.txt"
+src_data_path = "data/preprocessed_trg.txt"
 
 saved_chkpt = 'saved_chkpt/'
 if not os.path.exists(saved_chkpt):
@@ -38,21 +38,21 @@ parser.add_argument('--tgt_data', type=str, default=tgt_data_path,
 # model parameter setting
 parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                     help='batch size')
-parser.add_argument('--d_model', type=int, default=512,
+parser.add_argument('--d_model', type=int, default=256,
                     help='size of word embeddings')
-parser.add_argument('--n_layers', type=int, default=4,
+parser.add_argument('--n_layers', type=int, default=6,
                     help='number of enc/dec layers in each block')
 parser.add_argument('--n_heads', type=int, default=8,
                     help='number of en/dec blocks')
-parser.add_argument('--ffn_hidden', type=int, default=2048,
+parser.add_argument('--ffn_hidden', type=int, default=1024,
                     help='number of hidden units in FFN')
 parser.add_argument('--dropout', type=float, default=0.1,
                     help='dropout probability')
-parser.add_argument('--max_sent_len', type=int, default=30,
+parser.add_argument('--max_sent_len', type=int, default=50,
                     help='Maximum length of sentence to use for train/valid/test')
 
 # optimizer parameter setting
-parser.add_argument('--init_lr', type=float, default=5e-5,
+parser.add_argument('--init_lr', type=float, default=1e-4,
                     help='initial learning rate')
 parser.add_argument('--scheduler_factor', type=float, default=0.9,
                     help='Factor with which LR will decreasing using scheduler (new_lr = old_lr * optim_factor)')
@@ -65,7 +65,7 @@ parser.add_argument('--optim_warmup', type=int, default=16000,
 parser.add_argument('--optim_weight_decay', type=int, default=5e-4,
                     help='Weight decay factor for optimizer')
 
-parser.add_argument('--epoch', type=int, default=150,
+parser.add_argument('--epoch', type=int, default=250,
                     help='Number of epochs to train')
 parser.add_argument('--clip', type=float, default=1.0,
                     help='Gradient clipping')
@@ -73,7 +73,7 @@ parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 parser.add_argument('--label_smooth_eps', type=float, default=0.1,
                     help='Hyper-parameter for label smoothening')
-parser.add_argument('--early_stop_patience', type=int, default=20,
+parser.add_argument('--early_stop_patience', type=int, default=100,
                     help='Patience for Early Stopping')
 
 args = parser.parse_args()
