@@ -51,18 +51,21 @@ class TransformerDecoderLayer(nn.Module):
     def forward(self, tgt: Tensor, memory: Tensor, tgt_mask, src_mask) -> Tensor:
         # 1. Compute self attention
         attention_1 = self.attention1(tgt, tgt, tgt, tgt_mask)
+        attention_1 = self.dropout1(attention_1)
         # 2. Add and norm
-        query = self.dropout1(self.norm1(attention_1 + tgt))
+        query = self.norm1(attention_1 + tgt)
 
         # 3. Encoder-decoder self attention
         attention_2 = self.attention2(query, memory, memory, src_mask)
+        attention_2 = self.dropout2(attention_2)
         # 4. Add and norm
-        x = self.dropout2(self.norm2(attention_2 + query))
+        x = self.norm2(attention_2 + query)
 
         # 5. FFN
         forward = self.feed_forward(x)
+        forward = self.dropout3(forward)
         # 6. Add and norm
-        out = self.dropout3(self.norm3(forward + x))
+        out = self.norm3(forward + x)
         return out
 
 # ########################################################################

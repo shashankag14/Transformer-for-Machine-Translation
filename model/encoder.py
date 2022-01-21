@@ -50,16 +50,17 @@ class TransformerEncoderLayer(nn.Module):
 
         # 1. Compute self attention
         attention = self.attention(src, src, src, mask)
+        attention = self.dropout1(attention)
         # Attention shape = Query shape  -> (N, query_len, n_head, dim_in)
 
         # 2. Add and norm
-        x = self.dropout1(self.norm1(attention + query))
+        x = self.norm1(attention + query)
 
         # 3. FFN
         forward = self.feed_forward(x)
-
+        forward = self.dropout2(forward)
         # 4. Add and norm
-        out = self.dropout2(self.norm2(forward + x))
+        out = self.norm2(forward + x)
         return out
 
 # ########################################################################
