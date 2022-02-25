@@ -4,8 +4,8 @@
 A PyTorch implementation of Transformers from scratch for Machine Translation on PHP Corpus dataset[1] (Czech->English) based on "Attention Is All You Need" by Ashish Vaswani et. al.[2]. The motive to create this repository is not to implement a state-of-the-art model for Machine Translation, but to get a hands-on experience in implementing the Transformer architecture from scratch. 
 
 _**Modification done over the baseline[2] :**_
-- _Reduced the model depth and improving the BLEU score by a margin of **0.84** (Check Ablation Study for more details)._
-- _Other minor modifications include using Early Stopping as an additional regularization technique, gradient clipping to avoid gradient explosion, maximum size of sentences to train, and played around with the hyperparameter values._
+- _Increased the model depth and improved the validation loss as well as BLEU score with a small margin._
+- _Performed ablation study to check the effects of Label Smoothening, vector dimensioanlity, rescaling of word embedding, and varying the size of hidden layer in feed-forward network_
 
 
 ![image](https://user-images.githubusercontent.com/74488693/146843786-d2b240cc-8aca-402d-9165-28ca8a5405b9.png)
@@ -47,9 +47,9 @@ python3 train.py [-h] [--src_data SRC_DATA] [--tgt_data TGT_DATA]
 python3 plot.py
 ```
 
-2. Use the saved checkpoints ([saved_ckpt/best_model.pt](saved_ckpt/best_model.pt)) to test the model :
+2. Use the saved checkpoints ([saved_ckpt/best_model.pt](saved_ckpt/best_model.pt)) to translate sentences from unseen data (test set) :
 ```
-python3 test.py
+python3 translate.py
 ```
 
 ### Arguments for train.py
@@ -58,24 +58,24 @@ python3 test.py
 | --- | --- | --- | --- |
 | `--src_data` | Location of the source data | -path- | -path- |
 | `--tgt_data` | Location of the target data | -path- | -path- |
-| `--epoch` | Number of epochs to train | 40 | N/A |
+| `--epoch` | Number of epochs to train | 150 | N/A |
 | `--batch_size` | Batch size | 32 | N\A |
-| `--d_model` | Size of word embedding | 512 | 512 |
-| `--n_layers` | _**Number of enc/dec layers**_ | _**4**_ | _**6**_ |
+| `--d_model` | Size of word embedding | 256 | 512 |**
+| `--n_layers` | Number of enc/dec layers | 7 | 6 |
 | `--n_heads` | Number of attention heads | 8 | 8 |
-| `--ffn_hidden` | Number of hidden units in FFN | 2048 | 2048 |
-| `--dropout` | Dropout probability | 0.1 | 0.1 |
-| `--max_sent_len` | _**Maximum length of sentence for train/valid/test**_ | _**30**_ | _**N/A**_ |
-| `--init_lr` | Initial Learning Rate | 5e-5 | N/A |
+| `--ffn_hidden` | Number of hidden units in FFN | 1024 | 2048 |
+| `--dropout` | Dropout probability | 0.15 | 0.1 |
+| `--max_sent_len` | Maximum length of sentence for train/valid/test | 50 | N/A |
+| `--init_lr` | Initial Learning Rate | 1e-4 | N/A |
 | `--scheduler_factor` | Factor with which LR will decreasing using scheduler | 0.9 | 0.9 |
-| `--optim_adam_eps` | _**Adam epsilon** | **5e-9** | **1e-9**_ |
+| `--optim_adam_eps` | Adam epsilon | 5e-9 | 1e-9 |
 | `--optim_patience` | Number of epochs optimizer waits before decreasing LR | 8 | N/A |
-| `--optim_warmup` | _**Optimizer warmup | 16000 | 4000 |**_
+| `--optim_warmup` | Optimizer warmup | 16000 | 4000 |
 | `--optim_weight_decay` | Weight decay factor for optimizer | 5e-4 | N/A |
-| `--clip` | _**Gradient clipping threshold to prevent exploding gradients** | **1.0** | **N/A**_ |
+| `--clip` | Gradient clipping threshold to prevent exploding gradients | 1.0 | N/A |
 | `--seed` | Seed for reproducibility | 1111 | N/A |
 | `--label_smooth_eps` | Hyper-parameter for label smoothening | 0.1 | 0.1 |
-| `--early_stop_patience` | _**Patience for Early Stopping** | **20** | N/A _|
+| `--early_stop_patience` | Patience for Early Stopping | 20 | N/A |
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -97,12 +97,17 @@ python3 test.py
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Data :
-* Original data : ~33k sentences each in source and target
-* After removing duplicate sentences and keeping maximum length of 30 (Source data as reference) : 5226 sentences each in source and target
-* Dataset splitting (# of sentences in each dataset)
-    * >Training : Validation : Test :: 3131 : 1047 : 1048
-* >src_vocab_size : 9211
-* >trg_vocab_size :  4735
+PHP Corpus Czech-English
+
+| Total Sentences in Corpus | ~33,000 |
+|-------------|-------------|
+| Unique sentences with <50 words | 5464 |
+| Train dataset | 4371 |
+| Validation dataset | 874 |
+| Test dataset | 219 |
+
+* Source (Czech) language vocabulary size : 8891
+* Target (English) language vocabulary size :  4564
 
 ## Regularization Techniques :
 As mentioned in the paper "Attention is All You Need" [2], I have used two types of regularization techniques which are active *only* during the train phase :
@@ -110,32 +115,24 @@ As mentioned in the paper "Attention is All You Need" [2], I have used two types
     * Note : In order to deativate Dropout during ```eval()```, I have used ```nn.Dropout()``` instead of ```nn.functional.dropout``` (Refer this [link](https://stackoverflow.com/questions/53419474/using-dropout-in-pytorch-nn-dropout-vs-f-dropout/53452827#53452827) for more info)
     * I tried increasing the dropout parameter, however didn't see any considerable improvement.
     
-3. **Label Smoothening (eps=0.1)** : Affected the training loss but improved the BLEU score on test data.
+3. **Label Smoothening (eps=0.1)** : One hot encoded labels encourages largest possible logits gaps to be fed to the softmax making the model
+less adaptive and too confident about its predictions leading to overfitting. However, label smoothening helps to avoid this by encouraging small logit gaps preventing overconfident predictions using smoothed labels.
+
 4. **Early Stopping (early_stop_patience=20)** : To stop the training before the model starts to overfit. (This is just an additional technique used which has not been presented in the paper)
 
-## Ablation Study
-### 1. Comparison of Results
-| Parameter    | Results from my model  | Results from baseline model |
-|-------------|-------------|-------------|
-| Minimum train loss | _**4.05**_ | 5.22 |
-| Minimum Validation loss | _**4.85**_ | 5.28 |
-| BLEU Score (on Test data) | _**6.25**_  | 5.41 |
+## Results
+| Statistics    | Value | 
+|-------------|-------------|
+| Minimum validation loss| 3.95 | 
+| Validation set BLEU score | 23.2| 
+| Time per epoch (seconds) | 45 | 
+| # of trainable parameters | 17,519,828 |
 
-* [results/random_machine_translations.txt](results/random_machine_translations.txt) : Some random machine translated sentences from test dataset have been generated using the saved checkpoint from my model.
+<img src="https://user-images.githubusercontent.com/74488693/155708874-1ba0bb2a-c819-4cad-93fa-8d8545d261be.png" height="300" width="400">
 
-### 2. Comparison of Learning Graphs
-<img src="https://user-images.githubusercontent.com/74488693/148826900-5cc6ba25-0f00-45c7-86b2-ef7a00b77b05.png" height="350" width="840">
-
-### 3. Comparison of Space-Time Complexity (GPU used : Tesla K80) 
-| Parameter    | From my model   | From baseline model |
-|-------------|-------------|-------------|
-| Number of trainable parameters | 29,689,215 | 39,749,119 |
-| Time per Epoch | 14s  | 18s |
 
 ## Conclusion
-As seen from the ablation study, my modified model (with reduced number of encoder/decoder layers) works particularily well on PHP Corpus dataset in terms of BLEU score, Train/Validation Loss as well as space time complexity. This might be due to the fact that there are less number of unique sentences in the dataset to train, hence shallow network performs better than deep networks. 
-
-Future direction could be to try features like Relative Position Encoding, Syntax Aware NMT (might work particularily well as the data is small), Coverage based NMT or Beam Search.
+The model is able to exploit the use of attention mechanism to learn the context of the sentence well as it is able to pick the main words with high frequency from the source sentence and translate them correctly. However, it fails to perform well on low frequency words. Another observation is the that the dataset contains a lot of special characters in the sentences ("http: / /bugs.php.net /", "satellite_exception_id()") as it is based on a guide related to PHP computer scripting language. After these sentences are preprocessed and the special characters are removed before training the model, the data tends to loose its main context. This makes the training of the model more challenging.
 
 ## Additional Comment 
 Due to limited availibilty of GPU resources, I could only train the model for very less training data due to which the results are not satisfactory. However, I tried to get the learning curve and BLEU score as good as possible. [Refer](https://arxiv.org/pdf/2105.13065.pdf) for information about how MT performs on low resources
