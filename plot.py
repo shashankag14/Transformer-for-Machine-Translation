@@ -17,12 +17,10 @@ def convert_to_list(file):
 
 train_loss_file = 'results/train_loss.txt'
 valid_loss_file = 'results/valid_loss.txt'
-bleu_score_file = 'results/bleu.txt'
 
 def create_plots():
 	train_loss = convert_to_list(train_loss_file)
 	valid_loss = convert_to_list(valid_loss_file)
-	bleu_score = convert_to_list(bleu_score_file)
 	num_epochs = len(train_loss)
 
 	fig = plt.figure()

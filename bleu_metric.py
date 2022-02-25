@@ -47,4 +47,3 @@ def get_bleu(hypotheses, reference):
     for hyp, ref in zip(hypotheses, reference):
         stats += np.array(bleu_stats(hyp, ref))
     return 100 * bleu(stats)
-

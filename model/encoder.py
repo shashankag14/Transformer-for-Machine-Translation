@@ -19,49 +19,32 @@ from model.attention import MultiHeadAttention
 # 4. Residual + layer norm
 # ########################################################################
 class TransformerEncoderLayer(nn.Module):
-    def __init__(
-        self,
-        dim_model: int = 512,
-        num_heads: int = 8,
-        dim_feedforward: int = 2048,
-        dropout: float = 0.1,
-    ):
-        super().__init__()
-        dim_k = dim_v = dim_model // num_heads # Input dim is split into num_heads
+	def __init__(self,
+	             dim_model : int = 512,
+	             num_heads : int = 8,
+	             dim_feedforward : int = 2048,
+	             dropout : float = 0.1,
+	             device : str = 'cpu'
+	             ):
+		super().__init__()
 
-        # Multi headed attention
-        self.attention = MultiHeadAttention(num_heads, dim_model, dim_k, dim_v)
-        self.norm1 = nn.LayerNorm(dim_model) # Layer norm instead of BatchNorm
-        self.dropout1 = nn.Dropout(dropout)
+		self.attention = MultiHeadAttention(dim_model, num_heads, dropout, device)
+		self.norm1 = nn.LayerNorm(dim_model)
 
-        # Feed Forward network
-        self.feed_forward = nn.Sequential(
-            nn.Linear(dim_model, dim_feedforward),
-            nn.ReLU(),
-            nn.Linear(dim_feedforward, dim_model),
-        )
-        self.norm2 = nn.LayerNorm(dim_model)  # Layer norm instead of BatchNorm
-        self.dropout2 = nn.Dropout(dropout)
+		self.feed_forward = FeedForwardLayer(dim_model, dim_feedforward, dropout)
+		self.norm2 = nn.LayerNorm(dim_model)
 
-    def forward(self, src: Tensor, mask) -> Tensor:
-        # In encoder, Key, Query and Value are all the same.
-        # In decoder these will change !!
-        key = query = value = src
+		self.dropout = nn.Dropout(dropout)
 
-        # 1. Compute self attention
-        attention = self.attention(src, src, src, mask)
-        attention = self.dropout1(attention)
-        # Attention shape = Query shape  -> (N, query_len, n_head, dim_in)
+	def forward(self, src, mask):
+		# self attention
+		attention, _ = self.attention(src, src, src, mask)
 
-        # 2. Add and norm
-        x = self.norm1(attention + query)
+		attention_norm = self.norm1(src + self.dropout(attention))
+		forward = self.feed_forward(attention_norm)
 
-        # 3. FFN
-        forward = self.feed_forward(x)
-        forward = self.dropout2(forward)
-        # 4. Add and norm
-        out = self.norm2(forward + x)
-        return out
+		output = self.norm2(attention_norm + self.dropout(forward))
+		return output
 
 # ########################################################################
 # # ENCODER BLOCK :
@@ -69,36 +52,53 @@ class TransformerEncoderLayer(nn.Module):
 # 2. Runs Encoder layers sequentially
 # ########################################################################
 class TransformerEncoder(nn.Module):
-    def __init__(
-        self,
-        src_vocab_size,
-        device,
-        num_layers: int = 6,
-        dim_model: int = 512,
-        num_heads: int = 8,
-        dim_feedforward: int = 2048,
-        dropout: float = 0.1,
-    ):
+	def __init__(self,
+	             src_vocab_size,
+	             dim_model,
+	             num_layers : int = 6,
+	             num_heads : int = 8,
+	             dim_feedforward : int = 2048,
+	             dropout : float = 0.1,
+	             device : str = 'cpu',
+	             MAX_LENGTH=100):
+		super().__init__()
+		self.device = device
+		self.dim_model = dim_model
+
+		self.word_embedding = nn.Embedding(src_vocab_size, dim_model)
+		# Rescalling coefficient for word embedding
+		self.coefficient = torch.sqrt(torch.FloatTensor([self.dim_model])).to(device)
+		self.position_encoding = PositionEncoding()
+
+		self.dropout = nn.Dropout(dropout)
+
+		encoding_layers = []
+		for _ in range(num_layers):
+			encoding_layers.append(TransformerEncoderLayer(dim_model, num_heads, dim_feedforward, dropout, device))
+		self.layers = nn.Sequential(*encoding_layers)
+
+	def forward(self, src, mask):
+		input_size = src.shape[1]
+
+		src = self.dropout((self.word_embedding(src) * self.coefficient)+ self.position_encoding(input_size, self.dim_model, self.device))
+
+		for layer in self.layers:
+			src = layer(src, mask)
+		return src
+
+
+class FeedForwardLayer(nn.Module):
+    def __init__(self, hidden_size, ff_size, dropout):
         super().__init__()
-        self.device = device
-        self.dim_model = dim_model
 
-        self.word_embedding = nn.Embedding(src_vocab_size, self.dim_model)
-        self.position_encoding = PositionEncoding()
-        self.embedding_dropout = nn.Dropout(dropout)
+        self.ff_layer = nn.Sequential(
+            nn.Linear(hidden_size, ff_size),
+            nn.ReLU(),
 
-        self.layers = nn.ModuleList([
-            TransformerEncoderLayer(dim_model, num_heads, dim_feedforward, dropout)
-            for _ in range(num_layers)
-        ])
+            nn.Dropout(dropout),
+            nn.Linear(ff_size, hidden_size)
+        )
 
-    def forward(self, src: Tensor, mask) -> Tensor:
-        seq_len = src.size(1)
-
-        pos_emb = self.position_encoding(seq_len, self.dim_model, self.device)
-        word_emb = self.word_embedding(src.to(torch.long))
-        src = self.embedding_dropout(pos_emb + word_emb)
-
-        for layer in self.layers:
-            src = layer(src, mask)
-        return src
+    def forward(self, input):
+        output = self.ff_layer(input)
+        return output

@@ -2,7 +2,7 @@ import torch
 from torch import nn
 
 # ########################################################################
-# # POS EMBEDDING - Using sin/cos
+# # POS ENCODING - Using sin/cos
 # Input : Sentence length, Word embedding size, Device (CPU/GPU?)
 # ########################################################################
 class PositionEncoding(nn.Module):

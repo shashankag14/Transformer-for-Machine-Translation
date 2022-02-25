@@ -1,3 +1,9 @@
+"""
+@author : Shashank Agarwal
+@when : 11-12-2021
+@homepage : https://github.com/shashankag14
+"""
+
 import argparse
 import os
 import torch
@@ -13,11 +19,11 @@ def compute_time(start_time, end_time):
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Directories for local files
-orig_src_data_path = "data/PHP.cs-en.cs"
-orig_tgt_data_path = "data/PHP.cs-en.en"
+# orig_src_data_path = "data/PHP.cs-en.cs"
+# orig_tgt_data_path = "data/PHP.cs-en.en"
 
-tgt_data_path = "data/preprocessed_src.txt"
-src_data_path = "data/preprocessed_trg.txt"
+src_data_path = "data/cs-en/cs.txt"
+tgt_data_path = "data/cs-en/en.txt"
 
 saved_chkpt = 'saved_chkpt/'
 if not os.path.exists(saved_chkpt):
@@ -40,13 +46,13 @@ parser.add_argument('--batch_size', type=int, default=32, metavar='N',
                     help='batch size')
 parser.add_argument('--d_model', type=int, default=256,
                     help='size of word embeddings')
-parser.add_argument('--n_layers', type=int, default=6,
+parser.add_argument('--n_layers', type=int, default=7,
                     help='number of enc/dec layers in each block')
 parser.add_argument('--n_heads', type=int, default=8,
                     help='number of en/dec blocks')
 parser.add_argument('--ffn_hidden', type=int, default=1024,
                     help='number of hidden units in FFN')
-parser.add_argument('--dropout', type=float, default=0.1,
+parser.add_argument('--dropout', type=float, default=0.15,
                     help='dropout probability')
 parser.add_argument('--max_sent_len', type=int, default=50,
                     help='Maximum length of sentence to use for train/valid/test')
@@ -73,7 +79,7 @@ parser.add_argument('--seed', type=int, default=1111,
                     help='random seed')
 parser.add_argument('--label_smooth_eps', type=float, default=0.1,
                     help='Hyper-parameter for label smoothening')
-parser.add_argument('--early_stop_patience', type=int, default=100,
+parser.add_argument('--early_stop_patience', type=int, default=20,
                     help='Patience for Early Stopping')
 
 args = parser.parse_args()

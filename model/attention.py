@@ -8,57 +8,55 @@ import torch
 from torch import Tensor
 from torch import nn
 
-class ScaledDotProductAttn(nn.Module):
-	def __init__(self):
-		super(ScaledDotProductAttn, self).__init__()
-		self.softmax = nn.Softmax(dim=3)
+class MultiHeadAttention(nn.Module):
+	def __init__(self, dim_model: int, num_heads: int, dropout: float, device):
+		super().__init__()
+		self.device = device
+		self.dim_model = dim_model
+		self.num_heads = num_heads
 
-	def forward(self, query: Tensor, key: Tensor, value: Tensor, mask, n_head, head_dim):
-		N = query.shape[0]
-		query_len = query.shape[1]
+		self.q = nn.Linear(dim_model, dim_model)
+		self.k = nn.Linear(dim_model, dim_model)
+		self.v = nn.Linear(dim_model, dim_model)
 
-		# queries shape -> (N, query_len, heads, heads_dim)
-		# keys shape -> (N, key_len, heads, heads_dim)
-		# temp -> (N, heads, query_len, key_len)
-		temp = torch.einsum("nqhd,nkhd->nhqk", [query, key])
+		self.head_dim = dim_model // num_heads
+		self.linear = nn.Linear(dim_model, dim_model)
+
+		self.dropout = nn.Dropout(dropout)
+
+	def scaled_dot_product_attn(self, q, k, v, mask):
+		N = q.shape[0]
+
+		# temp -> [N, num_heads, len_q, len_k]
+		scale = (self.dim_model ** 0.5)
+		temp = torch.matmul(q, k.permute(0, 1, 3, 2)) / scale
 
 		if mask is not None:
-			temp = temp.masked_fill(mask == 0, float("-1e20"))
+			temp = temp.masked_fill(mask == 0, -1e10)
 
-		scale = (n_head * head_dim) ** 0.5
-		softmax_out = self.softmax(temp / scale)
+		softmax_out = torch.softmax(temp, dim=-1)
+		# matmul faster than einsum
+		# Apply dropout on softmax and then multiply with value
+		attention = torch.matmul(self.dropout(softmax_out), v)
+		# 4d - [N, len_q, num_head, head_dim]
+		attention = attention.permute(0, 2, 1, 3).contiguous()
+		# 3d - [N, len_q, num_head*head_dim]
+		attention = attention.view(N, -1, self.dim_model)
+		return attention, softmax_out
 
-		# softmax_out shape -> (N, n_head, query_len, key_len)
-		# value shape -> (N, value_len, n_head, head_dim)
-		# out shape -> (N, query_len, n_head, head_dim)
-		# out shape after reshaping -> (N, query_len, n_head * head_dim)
-		out = torch.einsum("nhqk, nvhd->nqhd", [softmax_out, value]).reshape(N, query_len, n_head * head_dim)
-		return out
-
-class MultiHeadAttention(nn.Module):
-	def __init__(self, num_heads: int, dim_in: int, dim_k: int, dim_v: int):
-		super().__init__()
-		self.scaled_dot_prod_attn = ScaledDotProductAttn()
-		self.q = nn.Linear(dim_in, dim_in)
-		self.v = nn.Linear(dim_in, dim_in)
-		self.k = nn.Linear(dim_in, dim_in)
-		self.num_heads = num_heads
-		self.head_dim = dim_in // num_heads
-		self.linear = nn.Linear(dim_in, dim_in)
-
-	def forward(self, query: Tensor, key: Tensor, value: Tensor, mask) -> Tensor:
+	def forward(self, query, key, value, mask=None):
 		N = query.shape[0]
-		query_len, key_len, value_len = query.shape[1], key.shape[1], value.shape[1]
 
 		query = self.q(query)
 		key = self.k(key)
-		value = self.v(value)
+		value = self.v(value)     
 
-		# Shape of x -> (N, x_len, heads, num_heads)
-		query = query.reshape(N, query_len, self.num_heads, self.head_dim)
-		key = key.reshape(N, key_len, self.num_heads, self.head_dim)
-		value = value.reshape(N, value_len, self.num_heads, self.head_dim)
+		# x (k/q/v) -> (N, num_heads, len_x, head_dim)
+		query = query.view(N, -1, self.num_heads, self.head_dim).permute(0, 2, 1, 3)
+		key = key.view(N, -1, self.num_heads, self.head_dim).permute(0, 2, 1, 3)
+		value = value.view(N, -1, self.num_heads, self.head_dim).permute(0, 2, 1, 3)
 
-		attention = self.scaled_dot_prod_attn(query, key, value, mask, self.num_heads, self.head_dim)
-		out = self.linear(attention)
-		return out
+		attention, softmax_out = self.scaled_dot_product_attn(query, key, value, mask)
+		attention = self.linear(attention)
+
+		return attention, softmax_out
