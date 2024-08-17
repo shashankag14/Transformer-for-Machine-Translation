@@ -2,6 +2,7 @@
 
 # Transformer-for-Machine-Translation
 A PyTorch implementation of Transformers from scratch for Machine Translation on PHP Corpus dataset[1] (Czech->English) based on "Attention Is All You Need" by Ashish Vaswani et. al.[2]. The motive to create this repository is not to implement a state-of-the-art model for Machine Translation, but to get a hands-on experience in implementing the Transformer architecture from scratch. 
+For more information about the intuition behind the Transformer architecture, you can have a look at this [article](https://medium.com/@shashankag14/understanding-attention-is-all-you-need-b658c43c0186)
 
 _**Modification done over the baseline[2] :**_
 - _Increased the model depth and improved the validation loss as well as BLEU score with a small margin._
